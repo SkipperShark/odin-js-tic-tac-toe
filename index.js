@@ -1,8 +1,10 @@
+import { createInterface } from 'node:readline';
+
 let player1Mark = "X"
 let player2Mark = "O"
 
 function createPlayer(mark) {
-  getMark = function() {
+  let getMark = function() {
     return mark
   }
 
@@ -11,13 +13,13 @@ function createPlayer(mark) {
   }
 }
 
-let board = (function() {
+let createBoard = function() {
   let noMarkValue = null
   let height = 3
   let width = 3
   let boardArray = []
 
-  initBoard = () => {
+  let init = function () {
     boardArray = []
     for(let i = 0; i < height; i++) {
       let row = []
@@ -28,14 +30,14 @@ let board = (function() {
     }
   }
   
-  printBoard = () => {
+  let printBoard = () => {
     boardArray.forEach( (row) => {
       console.log(row);
     })
     console.log("\n");
   }
 
-  setCell = (x, y, mark) => {
+  let setCell = (x, y, mark) => {
     if (boardArray.length != height) {
       throw Error("board height invalid, did you initialize the board?")
     }
@@ -46,27 +48,37 @@ let board = (function() {
       }
     })
 
+    if (boardArray[x][y] != undefined) {
+      return
+    }
+
     boardArray[x][y] = mark
   }
 
+  init()
+
   return {
     printBoard,
-    initBoard,
     setCell
   }
   
-})()
+}
 
 let game = (function(player1Mark, player2Mark) {
   let player1 = createPlayer(player1Mark) 
   let player2 = createPlayer(player2Mark)
 
-
+  let board = createBoard()
+  board.printBoard()
   
 })(player1Mark, player2Mark)
 
 
-// board.initBoard()
-board.printBoard()
-board.setCell(1,1, "X")
-board.printBoard()
+const rl = createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
+rl.question(`What's your name?`, name => {
+  console.log(`Hi ${name}!`);
+  rl.close();
+});
