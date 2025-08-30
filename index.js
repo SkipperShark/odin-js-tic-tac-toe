@@ -34,16 +34,22 @@ let board = (function() {
     }
   }
 
-  getBoard = () => {
-    return boardArray
+  printBoard = () => {
+    boardArray.forEach( (row) => {
+      console.log(row);
+    })
+  }
+
+  setCell = (x, y, mark) => {
+    boardArray[x][y] = mark
   }
 
   return {
-    getBoard,
+    printBoard,
     initBoard
   }
 
 })()
 
 board.initBoard()
-console.log(board.getBoard());
+board.printBoard()
