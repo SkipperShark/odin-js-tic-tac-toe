@@ -1,3 +1,6 @@
+let player1Mark = "X"
+let player2Mark = "O"
+
 function createPlayer(mark) {
   getMark = function() {
     return mark
@@ -7,10 +10,6 @@ function createPlayer(mark) {
     getMark
   }
 }
-
-let player1 = createPlayer("X") 
-let player2 = createPlayer("O")
-console.log(player2.getMark())
 
 let board = (function() {
   let noMarkValue = null
@@ -28,7 +27,7 @@ let board = (function() {
       boardArray.push(row)
     }
   }
-
+  
   printBoard = () => {
     boardArray.forEach( (row) => {
       console.log(row);
@@ -55,8 +54,17 @@ let board = (function() {
     initBoard,
     setCell
   }
-
+  
 })()
+
+let game = (function(player1Mark, player2Mark) {
+  let player1 = createPlayer(player1Mark) 
+  let player2 = createPlayer(player2Mark)
+
+
+  
+})(player1Mark, player2Mark)
+
 
 // board.initBoard()
 board.printBoard()
