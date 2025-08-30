@@ -18,11 +18,6 @@ let board = (function() {
   let width = 3
   let boardArray = []
 
-  // boars shold be [
-  // [1,2,3]
-  // [4,5,6]
-  // [7,8,9]
-
   initBoard = () => {
     boardArray = []
     for(let i = 0; i < height; i++) {
@@ -38,18 +33,32 @@ let board = (function() {
     boardArray.forEach( (row) => {
       console.log(row);
     })
+    console.log("\n");
   }
 
   setCell = (x, y, mark) => {
+    if (boardArray.length != height) {
+      throw Error("board height invalid, did you initialize the board?")
+    }
+
+    boardArray.forEach( (row) => {
+      if (row.length != width) {
+        throw Error("board width invalid, did you initialize the board?")
+      }
+    })
+
     boardArray[x][y] = mark
   }
 
   return {
     printBoard,
-    initBoard
+    initBoard,
+    setCell
   }
 
 })()
 
-board.initBoard()
+// board.initBoard()
+board.printBoard()
+board.setCell(1,1, "X")
 board.printBoard()
