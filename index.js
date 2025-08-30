@@ -3,6 +3,22 @@ import { createInterface } from 'node:readline';
 let player1Mark = "X"
 let player2Mark = "O"
 
+const rl = createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
+
+function promptUserForInput(strMessage, fnInputHandler) {
+  rl.question(strMessage, input => {
+    fnInputHandler(input)
+    rl.close();
+  });
+}
+
+function log(message) {
+  console.log(message);
+}
+
 function createPlayer(mark) {
   let getMark = function() {
     return mark
@@ -14,48 +30,48 @@ function createPlayer(mark) {
 }
 
 let createBoard = function() {
-  let noMarkValue = null
-  let height = 3
-  let width = 3
-  let boardArray = []
+  let _noMarkValue = null
+  let _height = 3
+  let _width = 3
+  let _boardArray = []
 
-  let init = function () {
-    boardArray = []
-    for(let i = 0; i < height; i++) {
+  let _init = function () {
+    _boardArray = []
+    for(let i = 0; i < _height; i++) {
       let row = []
-      for(let j = 0; j < width; j++) {
-        row.push(noMarkValue)
+      for(let j = 0; j < _width; j++) {
+        row.push(_noMarkValue)
       }
-      boardArray.push(row)
+      _boardArray.push(row)
     }
   }
   
   let printBoard = () => {
-    boardArray.forEach( (row) => {
-      console.log(row);
+    _boardArray.forEach( (row) => {
+      log(row);
     })
-    console.log("\n");
+    log("\n");
   }
 
   let setCell = (x, y, mark) => {
-    if (boardArray.length != height) {
+    if (_boardArray.length != _height) {
       throw Error("board height invalid, did you initialize the board?")
     }
 
-    boardArray.forEach( (row) => {
-      if (row.length != width) {
+    _boardArray.forEach( (row) => {
+      if (row.length != _width) {
         throw Error("board width invalid, did you initialize the board?")
       }
     })
 
-    if (boardArray[x][y] != undefined) {
+    if (_boardArray[x][y] != undefined) {
       return
     }
 
-    boardArray[x][y] = mark
+    _boardArray[x][y] = mark
   }
 
-  init()
+  _init()
 
   return {
     printBoard,
@@ -66,19 +82,42 @@ let createBoard = function() {
 
 let game = (function(player1Mark, player2Mark) {
   let player1 = createPlayer(player1Mark) 
+  let player1Turn = true
   let player2 = createPlayer(player2Mark)
+  let winner = null
 
   let board = createBoard()
-  board.printBoard()
+  
+  let playRound = () => {
+    if (player1Turn) {
+      
+      log(`Player 1's turn, where would you like to put your ${player1.getMark()} mark?`)
+    } else {
+      log(`Player 1's turn, where would you like to put your ${player2.getMark()} mark?`)
+    }
+  }
+
+  let start = () => {
+    log("Welcome to Odin Tic-tac-toe!")
+    board.printBoard()
+    playRound()
+
+  }
+
+
+  return {
+    start
+  }
   
 })(player1Mark, player2Mark)
 
+game.start()
 
-const rl = createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
-rl.question(`What's your name?`, name => {
-  console.log(`Hi ${name}!`);
-  rl.close();
-});
+// const rl = createInterface({
+//   input: process.stdin,
+//   output: process.stdout,
+// });
+// rl.question(`What's your name?`, name => {
+//   console.log(`Hi ${name}!`);
+//   rl.close();
+// });
