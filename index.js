@@ -1,3 +1,4 @@
+import { type } from 'node:os';
 import { createInterface } from 'node:readline';
 
 let player1Mark = "X"
@@ -8,12 +9,12 @@ const rl = createInterface({
   output: process.stdout,
 });
 
-function promptUserForInput(strMessage, fnInputHandler) {
-  rl.question(strMessage, input => {
-    fnInputHandler(input)
-    rl.close();
-  });
-}
+// function promptUserForInput(strMessage, fnInputHandler) {
+//   rl.question(strMessage, input => {
+//     fnInputHandler(input)
+//     rl.close();
+//   });
+// }
 
 function log(message) {
   console.log(message);
@@ -88,22 +89,43 @@ let game = (function(player1Mark, player2Mark) {
 
   let board = createBoard()
   
-  let playRound = () => {
+  let playRound = function() {
+    let message = ""
     if (player1Turn) {
-      
-      log(`Player 1's turn, where would you like to put your ${player1.getMark()} mark?`)
+      message = `Player 1's turn, where would you like to put your ${player1.getMark()} mark?\n`
     } else {
-      log(`Player 1's turn, where would you like to put your ${player2.getMark()} mark?`)
-    }
+      message = `Player 2's turn, where would you like to put your ${player2.getMark()} mark?\n`
+    } 
+    promptUserForInput(message, (index) => {
+      log({player1Turn, index})
+      let mark = player1Turn ? player1.getMark() : player2.getMark()
+      board.setCell(index, mark)
+      player1Turn = !player1Turn
+      playRound()
+    })
   }
 
   let start = () => {
     log("Welcome to Odin Tic-tac-toe!")
     board.printBoard()
     playRound()
-
+    
   }
-
+  
+  let promptUserForInput = (message, validInputHandler) => {
+    rl.question(message, (input) => {
+      let index = parseInt(input)
+      // let typeOfIndex = typeof index
+      // log({index, typeOfIndex})
+      if (index > 0 && index <= 9) {
+        validInputHandler(index)
+        rl.close()
+      } else {
+        log("Please input a number between (inclusive) 1 and 9")
+        promptUserForInput("")
+      }
+    })
+  }
 
   return {
     start
@@ -121,3 +143,7 @@ game.start()
 //   console.log(`Hi ${name}!`);
 //   rl.close();
 // });
+
+
+// let test = "X"
+// console.log(parseInt(test))
