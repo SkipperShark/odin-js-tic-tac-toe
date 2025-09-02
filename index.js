@@ -3,18 +3,8 @@ import { createInterface } from 'node:readline';
 
 let player1Mark = "X"
 let player2Mark = "O"
-
-const rl = createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
-
-// function promptUserForInput(strMessage, fnInputHandler) {
-//   rl.question(strMessage, input => {
-//     fnInputHandler(input)
-//     rl.close();
-//   });
-// }
+let rlInput = process.stdin
+let rlOutput = process.stdout
 
 function log(message) {
   console.log(message);
@@ -35,6 +25,7 @@ let createBoard = function() {
   let _height = 3
   let _width = 3
   let _boardArray = []
+  _init()
 
   let _init = function () {
     _boardArray = []
@@ -48,31 +39,17 @@ let createBoard = function() {
   }
   
   let printBoard = () => {
-    _boardArray.forEach( (row) => {
+    _boardArray.forEach((row) => {
       log(row);
     })
     log("\n");
   }
 
   let setCell = (x, y, mark) => {
-    if (_boardArray.length != _height) {
-      throw Error("board height invalid, did you initialize the board?")
-    }
-
-    _boardArray.forEach( (row) => {
-      if (row.length != _width) {
-        throw Error("board width invalid, did you initialize the board?")
-      }
-    })
-
-    if (_boardArray[x][y] != undefined) {
-      return
-    }
+    if (_boardArray[x][y] === undefined) throw Error("You have chosen an invalid cell!")
 
     _boardArray[x][y] = mark
   }
-
-  _init()
 
   return {
     printBoard,
@@ -86,8 +63,13 @@ let game = (function(player1Mark, player2Mark) {
   let player1Turn = true
   let player2 = createPlayer(player2Mark)
   let winner = null
-
   let board = createBoard()
+  
+  let start = () => {
+    log("Welcome to Odin Tic-tac-toe!")
+    board.printBoard()
+    playRound()
+  }
   
   let playRound = function() {
     let message = ""
@@ -105,26 +87,14 @@ let game = (function(player1Mark, player2Mark) {
     })
   }
 
-  let start = () => {
-    log("Welcome to Odin Tic-tac-toe!")
-    board.printBoard()
-    playRound()
-    
-  }
-  
-  let promptUserForInput = (message, validInputHandler) => {
-    rl.question(message, (input) => {
-      let index = parseInt(input)
-      // let typeOfIndex = typeof index
-      // log({index, typeOfIndex})
-      if (index > 0 && index <= 9) {
-        validInputHandler(index)
-        rl.close()
-      } else {
-        log("Please input a number between (inclusive) 1 and 9")
-        promptUserForInput("")
-      }
-    })
+
+
+  let inputHandler = function(input) {
+    let index = parseInt(input)
+    if (!(index > 0 && index <= 9)) {
+      throw new Error("Please input a number between (inclusive) 1 and 9")
+    }
+    return index
   }
 
   return {
@@ -133,8 +103,41 @@ let game = (function(player1Mark, player2Mark) {
   
 })(player1Mark, player2Mark)
 
-game.start()
+let consoleIOController = (function(rlInput, rlOutput) {
+  const rl = createInterface({
+    input: rlInput,
+    output: rlOutput,
+  });
+  
+  // let promptUser = (message, validInputHandler) => {
+  //   rl.question(message, (input) => {
+  //     let index = parseInt(input)
+  //     if (index > 0 && index <= 9) {
+  //       validInputHandler(index)
+  //       terminate()
+  //     } else {
+  //       log("Please input a number between (inclusive) 1 and 9")
+  //       promptUser("")
+  //     }
+  //   })
+  // }
+  let promptUser = (message, inputHandler) => {
+    log(message)
+    rl.question(message, (input) => {
+      try {
+        inputHandler(input)
+      }
+      catch (error) {
+        promptUser(error)
+      }
+    })
+  }
 
+})(rlInput, rlOutput)
+
+
+
+game.start()
 // const rl = createInterface({
 //   input: process.stdin,
 //   output: process.stdout,
