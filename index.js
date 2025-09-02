@@ -1,6 +1,5 @@
 import { createInterface } from 'node:readline';
 
-
 let player1Mark = "X"
 let player2Mark = "O"
 let rlInput = process.stdin
@@ -65,12 +64,12 @@ let createBoard = function() {
   }
     
   _init()
+
   return {
     printBoard,
     setCellByCellNum
   }
 }
-
 
 let consoleIOController = (function(rlInput, rlOutput) {
   const rl = createInterface({
@@ -78,31 +77,8 @@ let consoleIOController = (function(rlInput, rlOutput) {
     output: rlOutput,
   });
   
-  // let promptUser = (message, validInputHandler) => {
-  //   rl.question(message, (input) => {
-  //     let index = parseInt(input)
-  //     if (index > 0 && index <= 9) {
-  //       validInputHandler(index)
-  //       terminate()
-  //     } else {
-  //       log("Please input a number between (inclusive) 1 and 9")
-  //       promptUser("")
-  //     }
-  //   })
-  // }
   let promptUser = (message, inputHandler) => {
     rl.question(message, inputHandler)
-    // rl.question(message, (input) => {
-    //   return inputHandler(input)
-    //   try {
-    //     return inputHandler(input)
-    //   }
-    //   catch (error) {
-    //     if(error instanceof RangeError) {
-          
-    //     }
-    //   }
-    // })
   }
 
   let terminate = () => {
@@ -113,7 +89,6 @@ let consoleIOController = (function(rlInput, rlOutput) {
     promptUser,
     terminate
   }
-
 })(rlInput, rlOutput)
 
 
@@ -151,19 +126,10 @@ let game = (function(player1Mark, player2Mark) {
     // }
   }
 
-  // let fnInputValid = function(input) {
-  //   let index = parseInt(input)
-  //   if (index > 0 && index <= 9) {
-  //     return true
-  //   }
-  //   return false
-  // }
-
   let inputHandler = function(input) {
     let index = parseInt(input)
     if (!(index >= 0 && index <= 8)) {
       let message = "Please input a number between (inclusive) 0 and 8\n"
-      // throw new RangeError(message)
       input = consoleIOController.promptUser(message, inputHandler)
     }
     board.setCellByCellNum(
@@ -180,17 +146,4 @@ let game = (function(player1Mark, player2Mark) {
   
 })(player1Mark, player2Mark)
 
-
 game.start()
-// const rl = createInterface({
-//   input: process.stdin,
-//   output: process.stdout,
-// });
-// rl.question(`What's your name?`, name => {
-//   console.log(`Hi ${name}!`);
-//   rl.close();
-// });
-
-
-// let test = "X"
-// console.log(parseInt(test))
