@@ -82,13 +82,12 @@ let consoleIOController = (function(rlInput, rlOutput) {
   //   })
   // }
   let promptUser =  async (message, inputHandler) => {
-    log(message)
     rl.question(message, (input) => {
       try {
         return inputHandler(input)
       }
       catch (error) {
-        promptUser("r")
+        promptUser(error.message, inputHandler)
       }
     })
   }
@@ -132,8 +131,7 @@ let game = (function(player1Mark, player2Mark) {
   let inputHandler = function(input) {
     let index = parseInt(input)
     if (!(index > 0 && index <= 9)) {
-      log("Please input a number between (inclusive) 1 and 9")
-      throw new Error()
+      throw new Error("Please input a number between (inclusive) 1 and 9\n")
     }
     log("success")
     let mark = player1Turn ? player1.getMark() : player2.getMark()
