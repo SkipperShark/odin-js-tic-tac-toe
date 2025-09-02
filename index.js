@@ -25,8 +25,7 @@ let createBoard = function() {
   let _height = 3
   let _width = 3
   let _boardArray = []
-  _init()
-
+  
   let _init = function () {
     _boardArray = []
     for(let i = 0; i < _height; i++) {
@@ -44,64 +43,20 @@ let createBoard = function() {
     })
     log("\n");
   }
-
+  
   let setCell = (x, y, mark) => {
     if (_boardArray[x][y] === undefined) throw Error("You have chosen an invalid cell!")
-
-    _boardArray[x][y] = mark
-  }
-
+      
+      _boardArray[x][y] = mark
+    }
+    
+  _init()
   return {
     printBoard,
     setCell
   }
-  
 }
 
-let game = (function(player1Mark, player2Mark) {
-  let player1 = createPlayer(player1Mark) 
-  let player1Turn = true
-  let player2 = createPlayer(player2Mark)
-  let winner = null
-  let board = createBoard()
-  
-  let start = () => {
-    log("Welcome to Odin Tic-tac-toe!")
-    board.printBoard()
-    playRound()
-  }
-  
-  let playRound = function() {
-    let message = ""
-    if (player1Turn) {
-      message = `Player 1's turn, where would you like to put your ${player1.getMark()} mark?\n`
-    } else {
-      message = `Player 2's turn, where would you like to put your ${player2.getMark()} mark?\n`
-    } 
-    promptUserForInput(message, (index) => {
-      log({player1Turn, index})
-      let mark = player1Turn ? player1.getMark() : player2.getMark()
-      board.setCell(index, mark)
-      player1Turn = !player1Turn
-      playRound()
-    })
-  }
-
-
-
-  let inputHandler = function(input) {
-    let index = parseInt(input)
-    if (!(index > 0 && index <= 9)) {
-      throw new Error("Please input a number between (inclusive) 1 and 9")
-    }
-    return index
-  }
-
-  return {
-    start
-  }
-  
-})(player1Mark, player2Mark)
 
 let consoleIOController = (function(rlInput, rlOutput) {
   const rl = createInterface({
@@ -125,7 +80,7 @@ let consoleIOController = (function(rlInput, rlOutput) {
     log(message)
     rl.question(message, (input) => {
       try {
-        inputHandler(input)
+        return inputHandler(input)
       }
       catch (error) {
         promptUser(error)
@@ -133,8 +88,55 @@ let consoleIOController = (function(rlInput, rlOutput) {
     })
   }
 
+  return {
+    promptUser
+  }
+
 })(rlInput, rlOutput)
 
+
+let game = (function(player1Mark, player2Mark) {
+  let player1 = createPlayer(player1Mark) 
+  let player1Turn = true
+  let player2 = createPlayer(player2Mark)
+  let winner = null
+  let board = createBoard()
+  
+  let start = () => {
+    log("Welcome to Odin Tic-tac-toe!")
+    board.printBoard()
+    playRound()
+  }
+  
+  let playRound = function() {
+    let message = ""
+    if (player1Turn) {
+      message = `Player 1's turn, where would you like to put your ${player1.getMark()} mark?\n`
+    } else {
+      message = `Player 2's turn, where would you like to put your ${player2.getMark()} mark?\n`
+    } 
+    index = consoleIOController.promptUser(message, inputHandler)
+    log({player1Turn, index})
+    let mark = player1Turn ? player1.getMark() : player2.getMark()
+    board.setCell(index, mark)
+    player1Turn = !player1Turn
+    playRound()
+  }
+
+
+  let inputHandler = function(input) {
+    let index = parseInt(input)
+    if (!(index > 0 && index <= 9)) {
+      throw new Error("Please input a number between (inclusive) 1 and 9")
+    }
+    return index
+  }
+
+  return {
+    start
+  }
+  
+})(player1Mark, player2Mark)
 
 
 game.start()
