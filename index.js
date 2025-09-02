@@ -81,19 +81,28 @@ let consoleIOController = (function(rlInput, rlOutput) {
   //     }
   //   })
   // }
-  let promptUser =  async (message, inputHandler) => {
-    rl.question(message, (input) => {
-      try {
-        return inputHandler(input)
-      }
-      catch (error) {
-        promptUser(error.message, inputHandler)
-      }
-    })
+  let promptUser = (message, inputHandler) => {
+    rl.question(message, inputHandler)
+    // rl.question(message, (input) => {
+    //   return inputHandler(input)
+    //   try {
+    //     return inputHandler(input)
+    //   }
+    //   catch (error) {
+    //     if(error instanceof RangeError) {
+          
+    //     }
+    //   }
+    // })
+  }
+
+  let terminate = () => {
+    rl.close()
   }
 
   return {
-    promptUser
+    promptUser,
+    terminate
   }
 
 })(rlInput, rlOutput)
@@ -120,28 +129,36 @@ let game = (function(player1Mark, player2Mark) {
       message = `Player 2's turn, where would you like to put your ${player2.getMark()} mark?\n`
     } 
     consoleIOController.promptUser(message, inputHandler)
-    // log({player1Turn, index})
+    // let index = consoleIOController.promptUser(message, fnInputValid)
+    // log("success")
     // let mark = player1Turn ? player1.getMark() : player2.getMark()
+    // log("test")
     // board.setCell(index, mark)
+    // log("a")
     // player1Turn = !player1Turn
-    // playRound()
+    // if (winnerFound === false) {
+    //   log("a")
+    //   playRound()
+    // }
   }
 
+  // let fnInputValid = function(input) {
+  //   let index = parseInt(input)
+  //   if (index > 0 && index <= 9) {
+  //     return true
+  //   }
+  //   return false
+  // }
 
   let inputHandler = function(input) {
     let index = parseInt(input)
     if (!(index > 0 && index <= 9)) {
-      throw new Error("Please input a number between (inclusive) 1 and 9\n")
+      let message = "Please input a number between (inclusive) 1 and 9\n"
+      // throw new RangeError(message)
+      input = consoleIOController.promptUser(message, inputHandler)
     }
-    log("success")
-    let mark = player1Turn ? player1.getMark() : player2.getMark()
-    board.setCell(index, mark)
-    log("a")
-    player1Turn = !player1Turn
-    if (winnerFound === false) {
-      log("a")
-      playRound()
-    }
+    log({index})
+    return index
   }
 
   return {
