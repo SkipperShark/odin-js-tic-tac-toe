@@ -1,5 +1,7 @@
-import { type } from 'node:os';
 import { createInterface } from 'node:readline';
+import { Readline } from 'node:readline/promises';
+import { cachedDataVersionTag } from 'node:v8';
+
 
 let player1Mark = "X"
 let player2Mark = "O"
@@ -45,10 +47,13 @@ let createBoard = function() {
   }
   
   let setCell = (x, y, mark) => {
-    if (_boardArray[x][y] === undefined) throw Error("You have chosen an invalid cell!")
-      
-      _boardArray[x][y] = mark
+    console.log("setCell");
+    console.log(_boardArray[x][y]);
+    if (_boardArray[x][y] === undefined) {
+      throw Error("You have chosen an invalid cell!")
     }
+    _boardArray[x][y] = mark
+  }
     
   _init()
   return {
@@ -76,14 +81,14 @@ let consoleIOController = (function(rlInput, rlOutput) {
   //     }
   //   })
   // }
-  let promptUser = (message, inputHandler) => {
+  let promptUser =  async (message, inputHandler) => {
     log(message)
     rl.question(message, (input) => {
       try {
         return inputHandler(input)
       }
       catch (error) {
-        promptUser(error)
+        promptUser("r")
       }
     })
   }
@@ -99,7 +104,7 @@ let game = (function(player1Mark, player2Mark) {
   let player1 = createPlayer(player1Mark) 
   let player1Turn = true
   let player2 = createPlayer(player2Mark)
-  let winner = null
+  let winnerFound = false
   let board = createBoard()
   
   let start = () => {
@@ -115,21 +120,30 @@ let game = (function(player1Mark, player2Mark) {
     } else {
       message = `Player 2's turn, where would you like to put your ${player2.getMark()} mark?\n`
     } 
-    index = consoleIOController.promptUser(message, inputHandler)
-    log({player1Turn, index})
-    let mark = player1Turn ? player1.getMark() : player2.getMark()
-    board.setCell(index, mark)
-    player1Turn = !player1Turn
-    playRound()
+    consoleIOController.promptUser(message, inputHandler)
+    // log({player1Turn, index})
+    // let mark = player1Turn ? player1.getMark() : player2.getMark()
+    // board.setCell(index, mark)
+    // player1Turn = !player1Turn
+    // playRound()
   }
 
 
   let inputHandler = function(input) {
     let index = parseInt(input)
     if (!(index > 0 && index <= 9)) {
-      throw new Error("Please input a number between (inclusive) 1 and 9")
+      log("Please input a number between (inclusive) 1 and 9")
+      throw new Error()
     }
-    return index
+    log("success")
+    let mark = player1Turn ? player1.getMark() : player2.getMark()
+    board.setCell(index, mark)
+    log("a")
+    player1Turn = !player1Turn
+    if (winnerFound === false) {
+      log("a")
+      playRound()
+    }
   }
 
   return {
