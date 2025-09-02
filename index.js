@@ -1,6 +1,4 @@
 import { createInterface } from 'node:readline';
-import { Readline } from 'node:readline/promises';
-import { cachedDataVersionTag } from 'node:v8';
 
 
 let player1Mark = "X"
@@ -28,7 +26,7 @@ let createBoard = function() {
   let _width = 3
   let _boardArray = []
   
-  let _init = function () {
+  let _init = function() {
     _boardArray = []
     for(let i = 0; i < _height; i++) {
       let row = []
@@ -39,26 +37,37 @@ let createBoard = function() {
     }
   }
   
-  let printBoard = () => {
+  let _getXAndYFromCellNum = function(cellNum) {
+    let conv1BasedTo0Based = 0
+    let x = Math.floor(cellNum / _width) - conv1BasedTo0Based
+    let y = cellNum % _height - conv1BasedTo0Based
+    log({x,y})
+    return {x, y}
+    
+  }
+  
+  let _setCell = function({x, y, mark}) {
+    if (_boardArray[x][y] === undefined) {
+      throw Error("You have chosen an invalid cell!")
+    }
+    _boardArray[x][y] = mark
+  }
+  
+  let printBoard = function() {
     _boardArray.forEach((row) => {
       log(row);
     })
     log("\n");
   }
   
-  let setCell = (x, y, mark) => {
-    console.log("setCell");
-    console.log(_boardArray[x][y]);
-    if (_boardArray[x][y] === undefined) {
-      throw Error("You have chosen an invalid cell!")
-    }
-    _boardArray[x][y] = mark
+  let setCellByCellNum = function(cellNum, mark) {
+    _setCell({..._getXAndYFromCellNum(cellNum), mark})
   }
     
   _init()
   return {
     printBoard,
-    setCell
+    setCellByCellNum
   }
 }
 
@@ -152,12 +161,16 @@ let game = (function(player1Mark, player2Mark) {
 
   let inputHandler = function(input) {
     let index = parseInt(input)
-    if (!(index > 0 && index <= 9)) {
-      let message = "Please input a number between (inclusive) 1 and 9\n"
+    if (!(index >= 0 && index <= 8)) {
+      let message = "Please input a number between (inclusive) 0 and 8\n"
       // throw new RangeError(message)
       input = consoleIOController.promptUser(message, inputHandler)
     }
-    log({index})
+    board.setCellByCellNum(
+      input,
+      player1Turn ? player1.getMark() : player2.getMark()
+    )
+    board.printBoard()
     return index
   }
 
