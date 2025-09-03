@@ -141,6 +141,10 @@ let game = (function(player1Mark, player2Mark) {
     return index
   }
 
+  let determineWinner = function() {
+    
+  }
+
   return {
     start
   }
