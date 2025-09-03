@@ -128,14 +128,15 @@ let game = (function(player1Mark, player2Mark) {
 
   let inputHandler = function(input) {
     let index = parseInt(input)
-    if (!(index >= 0 && index <= 8)) {
-      let message = "Please input a number between (inclusive) 0 and 8\n"
-      input = consoleIOController.promptUser(message, inputHandler)
+    let invalid = !(index >= 0 && index <= 8)
+    if (invalid) {
+      input = consoleIOController.promptUser(
+        "Please input a number between (inclusive) 0 and 8\n",
+        inputHandler
+      )
     }
-    board.setCellByCellNum(
-      input,
-      player1Turn ? player1.getMark() : player2.getMark()
-    )
+    let mark = player1Turn ? player1.getMark() : player2.getMark()
+    board.setCellByCellNum(input, mark)
     board.printBoard()
     return index
   }
