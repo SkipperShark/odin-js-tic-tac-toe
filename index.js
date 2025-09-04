@@ -23,16 +23,16 @@ let createBoard = function() {
   let _noMarkValue = null
   let _height = 3
   let _width = 3
-  let _boardArray = []
+  let cells = []
   
   let _init = function() {
-    _boardArray = []
+    cells = []
     for(let i = 0; i < _height; i++) {
       let row = []
       for(let j = 0; j < _width; j++) {
         row.push(_noMarkValue)
       }
-      _boardArray.push(row)
+      cells.push(row)
     }
   }
   
@@ -46,17 +46,18 @@ let createBoard = function() {
   }
   
   let _setCell = function({x, y, mark}) {
-    if (_boardArray[x] === undefined || _boardArray[x][y] === undefined) {
+    if (cells[x] === undefined || cells[x][y] === undefined) {
       throw Error("You have chosen an invalid cell!")
     }
-    if (_boardArray[x][y] !== null) {
+    if (cells[x][y] !== null) {
       throw Error("Cell already has a mark!")
     }
-    _boardArray[x][y] = mark
+    cells[x][y] = mark
   }
   
   let printBoard = function() {
-    _boardArray.forEach((row) => {
+    log("");
+    cells.forEach((row) => {
       log(row);
     })
     log("");
@@ -65,12 +66,17 @@ let createBoard = function() {
   let setCellByCellNum = function(cellNum, mark) {
     _setCell({..._getXAndYFromCellNum(cellNum), mark})
   }
+
+  let getCells = function () {
+    return [...cells]
+  }
     
   _init()
 
   return {
     printBoard,
-    setCellByCellNum
+    setCellByCellNum,
+    getCells
   }
 }
 
@@ -125,6 +131,10 @@ let game = (function(player1Mark, player2Mark) {
     }
     _flipPlayerTurn()
     if (!winnerFound) {
+      log("---------- skipper debug start")
+      log(board.getCells())
+      board.getCells()[0][1] = "HELLO WORLD!!! :D"
+      log("---------- skipper debug end")
       playRound()
       return
     }
