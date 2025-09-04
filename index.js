@@ -68,7 +68,9 @@ let createBoard = function() {
   }
 
   let getCells = function () {
-    return [...cells]
+    return cells.map((arr) => {
+      return [...arr]
+    })
   }
     
   _init()
@@ -131,10 +133,6 @@ let game = (function(player1Mark, player2Mark) {
     }
     _flipPlayerTurn()
     if (!winnerFound) {
-      log("---------- skipper debug start")
-      log(board.getCells())
-      board.getCells()[0][1] = "HELLO WORLD!!! :D"
-      log("---------- skipper debug end")
       playRound()
       return
     }
