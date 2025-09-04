@@ -116,6 +116,7 @@ let game = (function(player1Mark, player2Mark) {
   }
   
   let playRound = function() {
+    log("----------")
     board.printBoard()
     let message = `Player ${player1Turn ? "1" : "2"}'s turn, where would you `
       + `like to put your ${_currentPlayerMark()} mark?\n`;
@@ -132,6 +133,7 @@ let game = (function(player1Mark, player2Mark) {
       return
     }
     _flipPlayerTurn()
+    determineWinner()
     if (!winnerFound) {
       playRound()
       return
@@ -141,8 +143,23 @@ let game = (function(player1Mark, player2Mark) {
   }
 
   let determineWinner = function() {
+    let cells = board.getCells()
+
+    let winnerFound = false
     // win conditions
     // straight horizontal line
+    cells.forEach( (row) => {
+      let first = row[0]
+      for(let i = 1; i < row.length; i++) {
+        let cell = row[i]
+        if ((cell === undefined) || (cell === null) || (cell !== first)) {
+          return
+        }
+      }
+      winnerFound = true
+
+    })
+    log(`winnerFound : ${winnerFound}`)
     // straight vertical line
     // diagonal line (both ways)
   }
