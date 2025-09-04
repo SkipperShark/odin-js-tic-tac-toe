@@ -109,12 +109,8 @@ let game = (function(player1Mark, player2Mark) {
   
   let playRound = function() {
     board.printBoard()
-    let message = ""
-    if (player1Turn) {
-      message = `Player 1's turn, where would you like to put your ${player1.getMark()} mark?\n`
-    } else {
-      message = `Player 2's turn, where would you like to put your ${player2.getMark()} mark?\n`
-    } 
+    let message = `Player ${player1Turn ? "1" : "2"}'s turn, where would you `
+      + `like to put your ${_currentPlayerMark()} mark?\n`;
     consoleIOController.promptUser(message, inputHandler)
   }
 
