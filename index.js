@@ -142,7 +142,10 @@ let game = (function(player1Mark, player2Mark) {
   }
 
   let determineWinner = function() {
-    
+    // win conditions
+    // straight horizontal line
+    // straight vertical line
+    // diagonal line (both ways)
   }
 
   return {
