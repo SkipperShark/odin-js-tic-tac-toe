@@ -40,7 +40,7 @@ let createBoard = function() {
     let conv1BasedTo0Based = 0
     let x = Math.floor(cellNum / _width) - conv1BasedTo0Based
     let y = cellNum % _height - conv1BasedTo0Based
-    log({x,y})
+    log(`debug. x: ${x}, y : ${y}`)
     return {x, y}
     
   }
@@ -48,6 +48,9 @@ let createBoard = function() {
   let _setCell = function({x, y, mark}) {
     if (_boardArray[x][y] === undefined) {
       throw Error("You have chosen an invalid cell!")
+    }
+    if (_boardArray[x][y] !== null) {
+      throw Error("Cell already has a mark!")
     }
     _boardArray[x][y] = mark
   }
@@ -101,11 +104,11 @@ let game = (function(player1Mark, player2Mark) {
   
   let start = () => {
     log("Welcome to Odin Tic-tac-toe!")
-    board.printBoard()
     playRound()
   }
   
   let playRound = function() {
+    board.printBoard()
     let message = ""
     if (player1Turn) {
       message = `Player 1's turn, where would you like to put your ${player1.getMark()} mark?\n`
@@ -128,17 +131,32 @@ let game = (function(player1Mark, player2Mark) {
 
   let inputHandler = function(input) {
     let index = parseInt(input)
-    let invalid = !(index >= 0 && index <= 8)
-    if (invalid) {
-      input = consoleIOController.promptUser(
+    // let invalid = !(index >= 0 && index <= 8)
+    // if (invalid) {
+    //   input = consoleIOController.promptUser(
+    //     "Please input a number between (inclusive) 0 and 8\n",
+    //     inputHandler
+    //   )
+    //   return
+    // }
+    // board.setCellByCellNum(input, mark)
+    let mark = player1Turn ? player1.getMark() : player2.getMark()
+    try {
+      board.setCellByCellNum(input, mark)
+    }
+    catch (error) {
+      log(error.message)
+      consoleIOController.promptUser(
         "Please input a number between (inclusive) 0 and 8\n",
         inputHandler
       )
+      return
     }
-    let mark = player1Turn ? player1.getMark() : player2.getMark()
-    board.setCellByCellNum(input, mark)
-    board.printBoard()
-    return index
+    // board.printBoard()
+    _flipPlayerTurn()
+    if (!winnerFound) {
+      playRound()
+    }
   }
 
   let determineWinner = function() {
@@ -146,6 +164,10 @@ let game = (function(player1Mark, player2Mark) {
     // straight horizontal line
     // straight vertical line
     // diagonal line (both ways)
+  }
+
+  let _flipPlayerTurn = function() {
+    player1Turn = !player1Turn
   }
 
   return {
