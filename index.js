@@ -1,4 +1,5 @@
 import { createInterface } from 'node:readline';
+import chalk from 'chalk';
 
 let player1Mark = "X"
 let player2Mark = "O"
@@ -8,6 +9,9 @@ let rlOutput = process.stdout
 function log(message) {
   console.log(message);
 }
+// function logBlue(message) {
+//   console.log(chalk.bgBlue))
+// }
 
 function createPlayer(mark) {
   let getMark = function() {
@@ -111,12 +115,12 @@ let game = (function(player1Mark, player2Mark) {
   let board = createBoard()
   
   let start = () => {
-    log("Welcome to Odin Tic-tac-toe!")
+    log(chalk.blueBright("Welcome to Odin Tic-tac-toe!"))
     playRound()
   }
   
   let playRound = function() {
-    log("----------")
+    log(chalk.blueBright("----------"))
     board.printBoard()
     let message = `Player ${player1Turn ? "1" : "2"}'s turn, where would you `
       + `like to put your ${_currentPlayerMark()} mark?\n`;
@@ -149,13 +153,11 @@ let game = (function(player1Mark, player2Mark) {
     // win conditions
     // straight horizontal line
     cells.forEach( (row) => {
-      let first = row[0]
-      for(let i = 1; i < row.length; i++) {
-        let cell = row[i]
-        if ((cell === undefined) || (cell === null) || (cell !== first)) {
-          return
-        }
-      }
+      let markCounts = {}
+      row.forEach(ele => {
+        markCounts[ele] === undefined ? markCounts[ele] = 1 : markCounts[ele] += 1
+      })
+      log(markCounts)
       winnerFound = true
 
     })
@@ -179,3 +181,8 @@ let game = (function(player1Mark, player2Mark) {
 })(player1Mark, player2Mark)
 
 game.start()
+
+
+let test = { "X" : 1}
+test["X"] === undefined ? test["X"] = 1 : test["X"] += 1
+console.log(test)
