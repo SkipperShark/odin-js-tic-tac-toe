@@ -6,12 +6,26 @@ let player2Mark = "O"
 let rlInput = process.stdin
 let rlOutput = process.stdout
 
-function log(message) {
-  console.log(message);
-}
-// function logBlue(message) {
-//   console.log(chalk.bgBlue))
-// }
+let log = (function () {
+  let log = console.log
+
+  let info = function(message) {
+    log(chalk.blueBright(message))
+  }
+
+  let debug = function(message) {
+    log(chalk.magentaBright(message))
+  }
+
+  let error = function(message) {
+    log(chalk.redBright(message))
+  }
+
+  return {
+    info, debug, error
+  }
+})()
+
 
 function createPlayer(mark) {
   let getMark = function() {
@@ -44,7 +58,7 @@ let createBoard = function() {
     let conv1BasedTo0Based = 0
     let x = Math.floor(cellNum / _width) - conv1BasedTo0Based
     let y = cellNum % _height - conv1BasedTo0Based
-    log({x,y})
+    // log.debug({x,y})
     return {x, y}
     
   }
@@ -60,11 +74,11 @@ let createBoard = function() {
   }
   
   let printBoard = function() {
-    log("");
+    log.debug("");
     cells.forEach((row) => {
-      log(row);
+      console.log(row);
     })
-    log("");
+    log.debug("");
   }
   
   let setCellByCellNum = function(cellNum, mark) {
@@ -93,7 +107,7 @@ let consoleIOController = (function(rlInput, rlOutput) {
   });
   
   let promptUser = (message, inputHandler) => {
-    rl.question(message, inputHandler)
+    rl.question(chalk.blueBright(message), inputHandler)
   }
 
   let terminate = () => {
@@ -115,12 +129,12 @@ let game = (function(player1Mark, player2Mark) {
   let board = createBoard()
   
   let start = () => {
-    log(chalk.blueBright("Welcome to Odin Tic-tac-toe!"))
+    log.info("Welcome to Odin Tic-tac-toe!")
     playRound()
   }
   
   let playRound = function() {
-    log(chalk.blueBright("----------"))
+    log.info("----------")
     board.printBoard()
     let message = `Player ${player1Turn ? "1" : "2"}'s turn, where would you `
       + `like to put your ${_currentPlayerMark()} mark?\n`;
@@ -132,7 +146,7 @@ let game = (function(player1Mark, player2Mark) {
       board.setCellByCellNum(parseInt(input), _currentPlayerMark())
     }
     catch (error) {
-      log(error.message)
+      log.error(error.message)
       playRound()
       return
     }
@@ -143,10 +157,11 @@ let game = (function(player1Mark, player2Mark) {
       return
     }
     consoleIOController.terminate()
-    log("congrats!")
+    log.info("congrats!")
   }
 
   let determineWinner = function() {
+    log.debug("determineWinner start")
     let cells = board.getCells()
 
     let winnerFound = false
@@ -155,13 +170,15 @@ let game = (function(player1Mark, player2Mark) {
     cells.forEach( (row) => {
       let markCounts = {}
       row.forEach(ele => {
-        markCounts[ele] === undefined ? markCounts[ele] = 1 : markCounts[ele] += 1
+        if (ele !== null) {
+          markCounts[ele] === undefined ? markCounts[ele] = 1 : markCounts[ele] += 1
+        }
       })
-      log(markCounts)
+      log.debug(JSON.stringify(markCounts))
       winnerFound = true
 
     })
-    log(`winnerFound : ${winnerFound}`)
+    log.debug(`winnerFound : ${winnerFound}`)
     // straight vertical line
     // diagonal line (both ways)
   }
@@ -181,8 +198,3 @@ let game = (function(player1Mark, player2Mark) {
 })(player1Mark, player2Mark)
 
 game.start()
-
-
-let test = { "X" : 1}
-test["X"] === undefined ? test["X"] = 1 : test["X"] += 1
-console.log(test)
