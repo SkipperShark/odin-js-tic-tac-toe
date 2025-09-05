@@ -166,6 +166,7 @@ let game = (function(player1Mark, player2Mark) {
 
     let winnerFound = false
     // win conditions
+
     // straight horizontal line
     cells.forEach( (row) => {
       let markCounts = {}
@@ -174,26 +175,23 @@ let game = (function(player1Mark, player2Mark) {
           markCounts[ele] === undefined ? markCounts[ele] = 1 : markCounts[ele] += 1
         }
       })
-      // log.debug(Object.values(markCounts))
-      // log.debug(JSON.stringify(markCounts))
-      // winnerFound = true
       if (Math.max(...Object.values(markCounts)) >= row.length) {
         winnerFound = true
       }
 
     })
+
+
+
+
+
     log.debug(`winnerFound : ${winnerFound}`)
     // straight vertical line
     // diagonal line (both ways)
   }
 
-  let _flipPlayerTurn = function() {
-    player1Turn = !player1Turn
-  }
-
-  let _currentPlayerMark = function () {
-    return player1Turn ? player1.getMark() : player2.getMark()
-  }
+  let _flipPlayerTurn = () => player1Turn = !player1Turn
+  let _currentPlayerMark = () => player1Turn ? player1.getMark() : player2.getMark()
 
   return {
     start
