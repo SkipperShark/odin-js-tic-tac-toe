@@ -87,8 +87,8 @@ let createBoard = function() {
 
 
   let getCells = () => cells.map(arr => [...arr])
-  let height = () => _height
-  let width = () => _width
+  let getHeight = () => _height
+  let getWidth = () => _width
     
   _init()
 
@@ -96,8 +96,8 @@ let createBoard = function() {
     printBoard,
     setCellByCellNum,
     getCells,
-    height,
-    width
+    getHeight,
+    getWidth
   }
 }
 
@@ -166,40 +166,61 @@ let game = (function(player1Mark, player2Mark) {
     let cells = board.getCells()
 
     let winnerFound = false
-    // win conditions
+    
+    let computeWinner = function(groups) {
+      for(let i = 0; i < groups.length; i++) {
+        let group = groups[i]
+        let markCounts = {}
 
-    // straight horizontal line
-    cells.forEach( (row) => {
-      let markCounts = {}
-      row.forEach(ele => {
-        if (ele !== null) {
-          markCounts[ele] === undefined ? markCounts[ele] = 1 : markCounts[ele] += 1
+        for (let j = 0; j < group.length; j++) {
+          let ele = group[j]
+          if (ele !== null) {
+            markCounts[ele] ? markCounts[ele] += 1 : markCounts[ele] = 1
+          }
         }
-      })
-      if (Math.max(...Object.values(markCounts)) >= row.length) {
-        winnerFound = true
+        if (Math.max(...Object.values(markCounts)) >= group.length) {
+          return true
+        }
       }
-
-    })
-
-    // straight vertical line
-    for(let i = 0; i < cells.length; i++) {
-      let col = []
-      for (let j = 0; j < cells.height(); j++) {
-
-      }
+      return false
     }
 
-    let cols = []
-    let cols = cells.forEach( (row, rowIndex) => {
-      for(let i = 0; i < cells.height; i++) {
+    // win conditions
+    // straight horizontal line
+    winnerFound = computeWinner(cells)
+    log.debug(`straight horizontal line winner found ${winnerFound}`)
+    // cells.forEach( (row) => {
+    //   let markCounts = {}
+    //   row.forEach(ele => {
+    //     if (ele !== null) {
+    //       markCounts[ele] === undefined ? markCounts[ele] = 1 : markCounts[ele] += 1
+    //     }
+    //   })
+    //   if (Math.max(...Object.values(markCounts)) >= row.length) {
+    //     winnerFound = true
+    //   }
+    // })
+
+    // straight vertical lines
+    // let cols = []
+    // for(let row_i = 0; row_i < board.getWidth(); row_i++) {
+    //   let col = []
+    //   for (let col_i = 0; col_i < board.getHeight(); col_i++) {
+    //     col.push(cells[row_i][col_i])
+    //   }
+    //   cols.push(col) 
+    // }
+    // console.log(cols)
+    // let cols = []
+    // let cols = cells.forEach( (row, rowIndex) => {
+    //   for(let i = 0; i < cells.height; i++) {
         
-      }
-      row.forEach( (ele, eleIndex) => {
+    //   }
+    //   row.forEach( (ele, eleIndex) => {
 
-      })
+    //   })
 
-    })
+    // })
     // let colArrays = cells.map( (row) => {
     //   for(let i = 0; i < row.length; i++) {
     //     colArrays[i] = row[i]
