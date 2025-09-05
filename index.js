@@ -1,4 +1,4 @@
-import { createInterface } from 'node:readline';
+import { clearScreenDown, createInterface } from 'node:readline';
 import chalk from 'chalk';
 
 let player1Mark = "X"
@@ -38,9 +38,9 @@ function createPlayer(mark) {
 }
 
 let createBoard = function() {
-  let _noMarkValue = null
-  let _height = 3
-  let _width = 3
+  const _noMarkValue = null
+  const _height = 3
+  const _width = 3
   let cells = []
   
   let _init = function() {
@@ -85,18 +85,19 @@ let createBoard = function() {
     _setCell({..._getXAndYFromCellNum(cellNum), mark})
   }
 
-  let getCells = function () {
-    return cells.map((arr) => {
-      return [...arr]
-    })
-  }
+
+  let getCells = () => cells.map(arr => [...arr])
+  let height = () => _height
+  let width = () => _width
     
   _init()
 
   return {
     printBoard,
     setCellByCellNum,
-    getCells
+    getCells,
+    height,
+    width
   }
 }
 
@@ -181,12 +182,33 @@ let game = (function(player1Mark, player2Mark) {
 
     })
 
+    // straight vertical line
+    for(let i = 0; i < cells.length; i++) {
+      let col = []
+      for (let j = 0; j < cells.height(); j++) {
 
+      }
+    }
+
+    let cols = []
+    let cols = cells.forEach( (row, rowIndex) => {
+      for(let i = 0; i < cells.height; i++) {
+        
+      }
+      row.forEach( (ele, eleIndex) => {
+
+      })
+
+    })
+    // let colArrays = cells.map( (row) => {
+    //   for(let i = 0; i < row.length; i++) {
+    //     colArrays[i] = row[i]
+    //   }
+    // })
 
 
 
     log.debug(`winnerFound : ${winnerFound}`)
-    // straight vertical line
     // diagonal line (both ways)
   }
 
