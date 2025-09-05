@@ -174,8 +174,12 @@ let game = (function(player1Mark, player2Mark) {
           markCounts[ele] === undefined ? markCounts[ele] = 1 : markCounts[ele] += 1
         }
       })
-      log.debug(JSON.stringify(markCounts))
-      winnerFound = true
+      // log.debug(Object.values(markCounts))
+      // log.debug(JSON.stringify(markCounts))
+      // winnerFound = true
+      if (Math.max(...Object.values(markCounts)) >= row.length) {
+        winnerFound = true
+      }
 
     })
     log.debug(`winnerFound : ${winnerFound}`)
