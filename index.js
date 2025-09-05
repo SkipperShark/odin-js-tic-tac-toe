@@ -164,24 +164,21 @@ let game = (function(player1Mark, player2Mark) {
   let determineWinner = function() {
     log.debug("determineWinner start")
     let cells = board.getCells()
-
     let winnerFound = false
     
     let computeWinner = function(groups) {
-      for(let i = 0; i < groups.length; i++) {
-        let group = groups[i]
-        let markCounts = {}
-
-        for (let j = 0; j < group.length; j++) {
-          let ele = group[j]
-          if (ele !== null) {
-            markCounts[ele] ? markCounts[ele] += 1 : markCounts[ele] = 1
-          }
-        }
+      for(const group of groups) { 
+        let markCounts = group.reduce(
+          (acc, ele) => {
+            if (ele === null) return acc
+            acc[ele] === undefined ? acc[ele] = 1 : acc[ele] += 1
+            return acc
+          },
+          {}
+        )
         if (Math.max(...Object.values(markCounts)) >= group.length) {
           return true
         }
-      }
       return false
     }
 
