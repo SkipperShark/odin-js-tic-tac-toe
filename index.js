@@ -42,61 +42,53 @@ let createBoard = function() {
   const _noMarkValue = null
   const _height = 3
   const _width = 3
-  let cells = []
-  
-  let _init = function() {
-    cells = []
-    for(let i = 0; i < _height; i++) {
-      let row = []
-      for(let j = 0; j < _width; j++) {
-        row.push(_noMarkValue)
-      }
-      cells.push(row)
+
+  let _cells = []
+  for(let i = 0; i < _height; i++) {
+    let row = []
+    for(let j = 0; j < _width; j++) {
+      row.push(_noMarkValue)
     }
+    _cells.push(row)
   }
+
+  let setCellByCellNum = function(cellNum, mark) {
+    _setCell({..._getXAndYFromCellNum(cellNum), mark})
+  }
+
+  let printBoard = function() {
+    log.debug("");
+    _cells.forEach((row) => {
+      console.log(row);
+    })
+    log.debug("");
+  }
+
+  let getCells = () => _cells.map(arr => [...arr])
+  let getHeight = () => _height
+  let getWidth = () => _width
+  let full = () => _cells.flat().filter(cell => cell === _noMarkValue).length === 0
   
   let _getXAndYFromCellNum = function(cellNum) {
     let conv1BasedTo0Based = 0
     let x = Math.floor(cellNum / _width) - conv1BasedTo0Based
     let y = cellNum % _height - conv1BasedTo0Based
-    // log.debug({x,y})
     return {x, y}
-    
   }
   
   let _setCell = function({x, y, mark}) {
-    if (cells[x] === undefined || cells[x][y] === undefined) {
+    if (_cells[x] === undefined || _cells[x][y] === undefined) {
       throw Error("You have chosen an invalid cell!")
     }
-    if (cells[x][y] !== null) {
+    if (_cells[x][y] !== null) {
       throw Error("Cell already has a mark!")
     }
-    cells[x][y] = mark
+    _cells[x][y] = mark
   }
-  
-  let printBoard = function() {
-    log.debug("");
-    cells.forEach((row) => {
-      console.log(row);
-    })
-    log.debug("");
-  }
-  
-  let setCellByCellNum = function(cellNum, mark) {
-    _setCell({..._getXAndYFromCellNum(cellNum), mark})
-  }
-
-
-  let getCells = () => cells.map(arr => [...arr])
-  let getHeight = () => _height
-  let getWidth = () => _width
-  let getNumCells = () => _width * _height
-    
-  _init()
 
   return {
     printBoard,
-    getNumCells,
+    full,
     setCellByCellNum,
     getCells,
     getHeight,
@@ -132,22 +124,18 @@ let game = (function(player1Mark, player2Mark) {
 
   let board = createBoard()
   
-  // let curTurn = 1
-  // let maxNumTurns = board.getNumCells()
-  
   let start = () => {
     log.info("Welcome to Odin Tic-tac-toe!")
     playRound()
   }
   
   let playRound = function() {
-    console.log({curTurn, maxNumTurns});
-    if (curTurn >= maxNumTurns) {
+    log.info("----------")
+    board.printBoard()
+    if (board.full() === true) {
       _endGame({isTie: true})
       return
     }
-    log.info("----------")
-    board.printBoard()
     let message = `Player ${player1Turn ? "1" : "2"}'s turn, where would you `
       + `like to put your ${_curPlayer().mark} mark?\n`;
     consoleIOController.promptUser(message, _inputHandler)
@@ -156,19 +144,19 @@ let game = (function(player1Mark, player2Mark) {
   let _inputHandler = function(input) {
     try {
       board.setCellByCellNum(parseInt(input), _curPlayer().mark)
-      curTurn += 1
+      if (_winnerFound() === true) {
+        _endGame()
+        return
+      }
+      playRound()
+      player1Turn = !player1Turn
+      return
     }
     catch (error) {
       log.error(error.message)
       playRound()
       return
     }
-    player1Turn = !player1Turn
-    if (_winnerFound() === false) {
-      playRound()
-      return
-    }
-    _endGame()
   }
 
   let _winnerFound = function() {
@@ -239,7 +227,7 @@ let game = (function(player1Mark, player2Mark) {
       name: player1Turn ? "Player 1" : "Player 2"
     }
   }
-  let _endGame = ({isTie}) => {
+  let _endGame = ({isTie=false} = {}) => {
     if (isTie) {
       consoleIOController.terminate()
       log.info(`Tie!, thanks for playing!`)
