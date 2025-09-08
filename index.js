@@ -136,7 +136,7 @@ let game = (function(player1Mark, player2Mark) {
       _endGame({isTie: true})
       return
     }
-    let message = `Player ${player1Turn ? "1" : "2"}'s turn, where would you `
+    let message = `${_curPlayer().name}'s turn, where would you `
       + `like to put your ${_curPlayer().mark} mark?\n`;
     consoleIOController.promptUser(message, _inputHandler)
   }
@@ -148,8 +148,8 @@ let game = (function(player1Mark, player2Mark) {
         _endGame()
         return
       }
-      playRound()
       player1Turn = !player1Turn
+      playRound()
       return
     }
     catch (error) {
@@ -229,11 +229,11 @@ let game = (function(player1Mark, player2Mark) {
   }
   let _endGame = ({isTie=false} = {}) => {
     if (isTie) {
-      consoleIOController.terminate()
       log.info(`Tie!, thanks for playing!`)
-      return
+    } else {
+      log.info(`Winner found! Congrats ${_curPlayer().name}!`)
     }
-    log.info(`Winner found! Congrats ${_curPlayer().name}!`)
+    consoleIOController.terminate()
   }
 
   return {
