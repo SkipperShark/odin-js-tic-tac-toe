@@ -90,11 +90,13 @@ let createBoard = function() {
   let getCells = () => cells.map(arr => [...arr])
   let getHeight = () => _height
   let getWidth = () => _width
+  let getNumCells = () => _width * _height
     
   _init()
 
   return {
     printBoard,
+    getNumCells,
     setCellByCellNum,
     getCells,
     getHeight,
@@ -125,10 +127,13 @@ let consoleIOController = (function(rlInput, rlOutput) {
 
 let game = (function(player1Mark, player2Mark) {
   let player1 = createPlayer(player1Mark) 
-  let player1Turn = true
   let player2 = createPlayer(player2Mark)
-  let winner = false
+  let player1Turn = true
+
   let board = createBoard()
+  
+  // let curTurn = 1
+  // let maxNumTurns = board.getNumCells()
   
   let start = () => {
     log.info("Welcome to Odin Tic-tac-toe!")
@@ -136,41 +141,42 @@ let game = (function(player1Mark, player2Mark) {
   }
   
   let playRound = function() {
+    console.log({curTurn, maxNumTurns});
+    if (curTurn >= maxNumTurns) {
+      _endGame({isTie: true})
+      return
+    }
     log.info("----------")
     board.printBoard()
     let message = `Player ${player1Turn ? "1" : "2"}'s turn, where would you `
-      + `like to put your ${_currentPlayerMark()} mark?\n`;
-    consoleIOController.promptUser(message, inputHandler)
+      + `like to put your ${_curPlayer().mark} mark?\n`;
+    consoleIOController.promptUser(message, _inputHandler)
   }
 
-  let inputHandler = function(input) {
+  let _inputHandler = function(input) {
     try {
-      board.setCellByCellNum(parseInt(input), _currentPlayerMark())
+      board.setCellByCellNum(parseInt(input), _curPlayer().mark)
+      curTurn += 1
     }
     catch (error) {
       log.error(error.message)
       playRound()
       return
     }
-    _flipPlayerTurn()
-    determineWinner()
-    if (!winner) {
+    player1Turn = !player1Turn
+    if (_winnerFound() === false) {
       playRound()
       return
     }
-    consoleIOController.terminate()
-    log.info("congrats!")
+    _endGame()
   }
 
-  let determineWinner = function() {
-    log.debug("determineWinner start")
+  let _winnerFound = function() {
     let cells = board.getCells()
-    let bWidth = board.getWidth(), bHeight = board.getHeight()
-    let winnerFound = false
+    let bWidth = board.getWidth()
+    let bHeight = board.getHeight()
 
-    let getWinner = () => player1Turn ? "Player 1" : "Player 2"
-    
-    let computeWinner = function(groups) {
+    let computerWinner = function(groups) {
       for(const group of groups) { 
         let markCounts = group.reduce(
           (acc, ele) => {
@@ -188,11 +194,9 @@ let game = (function(player1Mark, player2Mark) {
     }
     // win conditions
     // straight horizontal line
-    if (computeWinner(cells)) {
-      winner = getWinner()
+    if (computerWinner(cells) == true) {
+      return true
     }
-    
-    // log.debug(`straight horizontal line winner found ${winnerFound}`)
 
     // straight vertical lines
     let groupsVertical = []
@@ -203,11 +207,9 @@ let game = (function(player1Mark, player2Mark) {
       }
       groupsVertical.push(col) 
     }
-    winnerFound = computeWinner(groupsVertical)
-    if (computeWinner(cells)) {
-      winner = getWinner()
+    if (computerWinner(cells) === true) {
+      return true
     }
-    // log.debug(`straight vertical line winner found ${winnerFound}`)
     
     // diagonal line (top left to bottom right)
     let groupsDiag = []
@@ -224,18 +226,27 @@ let game = (function(player1Mark, player2Mark) {
     }
     groupsDiag.push(diag)
     
-    winnerFound = computeWinner(groupsDiag)
-    if (computeWinner(cells)) {
-      winner = getWinner()
+    if (computerWinner(cells) === true) {
+      return true
     }
-    // log.debug(`diagonal line winner found ${winnerFound}`)
-    
-    // final checking
-    log.debug(`winnerFound : ${winnerFound}`)
-  }
 
-  let _flipPlayerTurn = () => player1Turn = !player1Turn
-  let _currentPlayerMark = () => player1Turn ? player1.getMark() : player2.getMark()
+    return false
+  }
+  
+  let _curPlayer = () => {
+    return {
+      mark: player1Turn ? player1.getMark() : player2.getMark(),
+      name: player1Turn ? "Player 1" : "Player 2"
+    }
+  }
+  let _endGame = ({isTie}) => {
+    if (isTie) {
+      consoleIOController.terminate()
+      log.info(`Tie!, thanks for playing!`)
+      return
+    }
+    log.info(`Winner found! Congrats ${_curPlayer().name}!`)
+  }
 
   return {
     start
