@@ -1,5 +1,6 @@
 import { clearScreenDown, createInterface } from 'node:readline';
 import chalk from 'chalk';
+import { brotliDecompress } from 'node:zlib';
 
 let player1Mark = "X"
 let player2Mark = "O"
@@ -164,6 +165,8 @@ let game = (function(player1Mark, player2Mark) {
   let determineWinner = function() {
     log.debug("determineWinner start")
     let cells = board.getCells()
+    let cells_flat = cells.flat()
+    let bWidth = board.getWidth(), bHeight = board.getHeight()
     let winnerFound = false
     
     let computeWinner = function(groups) {
@@ -202,7 +205,6 @@ let game = (function(player1Mark, player2Mark) {
     // diagonal line (both ways)
     let diags = []
     // for readability
-    let bWidth = board.getWidth(), bHeight = board.getHeight()
     let diag = []
     for(let i = 0; i < bWidth; i++) {
       diag.push(cells[i][i])
