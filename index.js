@@ -184,24 +184,44 @@ let game = (function(player1Mark, player2Mark) {
     }
     // win conditions
     // straight horizontal line
-    winnerFound = computeWinner(cells)
-    log.debug(`straight horizontal line winner found ${winnerFound}`)
+    // winnerFound = computeWinner(cells)
+    // log.debug(`straight horizontal line winner found ${winnerFound}`)
 
-    // straight vertical lines
-    let cols = []
-    for(let col_i = 0; col_i < board.getWidth(); col_i++) {
-      let col = []
-      for (let row_i = 0; row_i < board.getHeight(); row_i++) {
-        col.push(cells[row_i][col_i])
-      }
-      cols.push(col) 
-    }
-    winnerFound = computeWinner(cols)
-    log.debug(`straight vertical line winner found ${winnerFound}`)
-    // })
+    // // straight vertical lines
+    // let cols = []
+    // for(let col_i = 0; col_i < board.getWidth(); col_i++) {
+    //   let col = []
+    //   for (let row_i = 0; row_i < board.getHeight(); row_i++) {
+    //     col.push(cells[row_i][col_i])
+    //   }
+    //   cols.push(col) 
+    // }
+    // winnerFound = computeWinner(cols)
+    // log.debug(`straight vertical line winner found ${winnerFound}`)
+    
     // diagonal line (both ways)
+    let diags = []
+    // for readability
+    let bWidth = board.getWidth(), bHeight = board.getHeight()
+    let diag = []
+    for(let i = 0; i < bWidth; i++) {
+      diag.push(cells[i][i])
+    }
+    diags.push(diag)
+    diag = []
+    for(let row_i = bHeight, col_j = bWidth; row_i >= 0 && col_j < bHeight; row_i--, col_j++) {
+      diag.push(cells[row_i][col_j])
+    }
+    diags.push(diag)
+    console.log(diags)
+    winnerFound = computeWinner(diags)
+    log.debug(`diagonal line winner found ${winnerFound}`)
+    
 
+    // final checking
     log.debug(`winnerFound : ${winnerFound}`)
+    console.log("Flattened array")
+    console.log(cells.flat())
   }
 
   let _flipPlayerTurn = () => player1Turn = !player1Turn
