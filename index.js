@@ -127,7 +127,7 @@ let game = (function(player1Mark, player2Mark) {
   let player1 = createPlayer(player1Mark) 
   let player1Turn = true
   let player2 = createPlayer(player2Mark)
-  let winnerFound = false
+  let winner = false
   let board = createBoard()
   
   let start = () => {
@@ -154,7 +154,7 @@ let game = (function(player1Mark, player2Mark) {
     }
     _flipPlayerTurn()
     determineWinner()
-    if (!winnerFound) {
+    if (!winner) {
       playRound()
       return
     }
@@ -165,9 +165,10 @@ let game = (function(player1Mark, player2Mark) {
   let determineWinner = function() {
     log.debug("determineWinner start")
     let cells = board.getCells()
-    let cells_flat = cells.flat()
     let bWidth = board.getWidth(), bHeight = board.getHeight()
     let winnerFound = false
+
+    let getWinner = () => player1Turn ? "Player 1" : "Player 2"
     
     let computeWinner = function(groups) {
       for(const group of groups) { 
@@ -187,43 +188,50 @@ let game = (function(player1Mark, player2Mark) {
     }
     // win conditions
     // straight horizontal line
-    // winnerFound = computeWinner(cells)
+    if (computeWinner(cells)) {
+      winner = getWinner()
+    }
+    
     // log.debug(`straight horizontal line winner found ${winnerFound}`)
 
-    // // straight vertical lines
-    // let cols = []
-    // for(let col_i = 0; col_i < board.getWidth(); col_i++) {
-    //   let col = []
-    //   for (let row_i = 0; row_i < board.getHeight(); row_i++) {
-    //     col.push(cells[row_i][col_i])
-    //   }
-    //   cols.push(col) 
-    // }
-    // winnerFound = computeWinner(cols)
+    // straight vertical lines
+    let groupsVertical = []
+    for(let col_i = 0; col_i < board.getWidth(); col_i++) {
+      let col = []
+      for (let row_i = 0; row_i < board.getHeight(); row_i++) {
+        col.push(cells[row_i][col_i])
+      }
+      groupsVertical.push(col) 
+    }
+    winnerFound = computeWinner(groupsVertical)
+    if (computeWinner(cells)) {
+      winner = getWinner()
+    }
     // log.debug(`straight vertical line winner found ${winnerFound}`)
     
-    // diagonal line (both ways)
-    let diags = []
-    // for readability
+    // diagonal line (top left to bottom right)
+    let groupsDiag = []
     let diag = []
     for(let i = 0; i < bWidth; i++) {
       diag.push(cells[i][i])
     }
-    diags.push(diag)
-    diag = []
-    for(let row_i = bHeight, col_j = bWidth; row_i >= 0 && col_j < bHeight; row_i--, col_j++) {
-      diag.push(cells[row_i][col_j])
-    }
-    diags.push(diag)
-    console.log(diags)
-    winnerFound = computeWinner(diags)
-    log.debug(`diagonal line winner found ${winnerFound}`)
+    groupsDiag.push(diag)
     
-
+    // diagonal line (bottom left to top right)
+    diag = []
+    for(let i = 0, j = bHeight - 1; i < bWidth && j < bHeight; i++, j--) {
+      diag.push(cells[j][i])
+    }
+    groupsDiag.push(diag)
+    
+    winnerFound = computeWinner(groupsDiag)
+    if (computeWinner(cells)) {
+      winner = getWinner()
+    }
+    // log.debug(`diagonal line winner found ${winnerFound}`)
+    
     // final checking
     log.debug(`winnerFound : ${winnerFound}`)
-    console.log("Flattened array")
-    console.log(cells.flat())
   }
 
   let _flipPlayerTurn = () => player1Turn = !player1Turn
