@@ -1,29 +1,5 @@
-// import chalk from 'chalk';
-
 let player1Mark = "X"
 let player2Mark = "O"
-// let rlInput = process.stdin
-// let rlOutput = process.stdout
-
-// let log = (function () {
-//     let log = console.log
-    
-//     let info = function(message) {
-//         log(chalk.blueBright(message))
-//     }
-    
-//     let debug = function(message) {
-//         log(chalk.magentaBright(message))
-//     }
-    
-//     let error = function(message) {
-//         log(chalk.redBright(message))
-//     }
-    
-//     return {
-//         info, debug, error
-//     }
-// })()
 
 
 function createPlayer(name, mark) {
@@ -57,13 +33,13 @@ let board = (function() {
         _setCell({..._getXAndYFromCellNum(cellNum), mark})
     }
     
-    // let printBoard = function() {
-    //   log.debug("");
-    //   _cells.forEach((row) => {
-        //     console.log(row);
-    //   })
-    //   log.debug("");
-    // }
+    let printBoard = function() {
+        console.log("");
+        _cells.forEach((row) => {
+            console.log(row);
+        })
+        console.log("");
+    }
     
     function getCells() { return _cells.map(arr => [...arr]) }
     function getHeight() { return _height }
@@ -107,35 +83,13 @@ let board = (function() {
     }
 })()
 
-// let consoleIOController = (function(rlInput, rlOutput) {
-//   const rl = createInterface({
-//     input: rlInput,
-//     output: rlOutput,
-//   });
-
-//   let promptUser = (message, inputHandler) => {
-    //     rl.question(chalk.blueBright(message), inputHandler)
-//   }
-
-//   let terminate = () => {
-    //     rl.close()
-//   }
-
-//   return {
-//     promptUser,
-//     terminate
-//   }
-// })(rlInput, rlOutput)
-
 
 let game = (function(player1Mark, player2Mark) {
     let player1 = createPlayer("Mark", player1Mark) 
     let player2 = createPlayer("John", player2Mark)
     let player1Turn = true
-    // let board = createBoard()
     
     function start() {
-        // log.info("Welcome to Odin Tic-tac-toe!")
         playRound()
     }
     
@@ -146,7 +100,6 @@ let game = (function(player1Mark, player2Mark) {
         }
         let message = `${_curPlayer().name}'s turn, where would you `
         + `like to put your ${_curPlayer().mark} mark?\n`;
-        // consoleIOController.promptUser(message, _inputHandler)
     }
     
     function _inputHandler(input) {
@@ -161,7 +114,6 @@ let game = (function(player1Mark, player2Mark) {
             return
         }
         catch (error) {
-            // log.error(error.message)
             alert(error.message)
             playRound()
             return
