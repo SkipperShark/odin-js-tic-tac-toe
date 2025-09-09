@@ -12,7 +12,7 @@ function createPlayer(name, mark) {
     }
 }
 
-let board = (function() {
+function createBoard(cellClickHandler) {
     const _noMarkValue = null
     const _height = 3
     const _width = 3
@@ -31,6 +31,7 @@ let board = (function() {
     
     function setCellByCellNum(cellNum, mark) {
         _setCell({..._getXAndYFromCellNum(cellNum), mark})
+        render()
     }
     
     let printBoard = function() {
@@ -51,8 +52,11 @@ let board = (function() {
         _cells.flat().forEach( (cell, i) => {
             const newLi = document.createElement("li")
             newLi.className = "cell"
-            newLi.textContent = i
+            const newButton = document.createElement("button")
+            newButton.textContent = `${cell} - ${i}`
+            newButton.addEventListener("click", () => cellClickHandler(i))
             newLi.setAttribute("cellId", i)
+            newLi.appendChild(newButton)
             ulBoard.appendChild(newLi)
         })
     }
@@ -81,13 +85,14 @@ let board = (function() {
         getHeight,
         getWidth
     }
-})()
+}
 
 
 let game = (function(player1Mark, player2Mark) {
     let player1 = createPlayer("Mark", player1Mark) 
     let player2 = createPlayer("John", player2Mark)
     let player1Turn = true
+    let board = createBoard(_inputHandler)
     
     function start() {
         playRound()
@@ -98,11 +103,12 @@ let game = (function(player1Mark, player2Mark) {
             _endGame({isTie: true})
             return
         }
-        let message = `${_curPlayer().name}'s turn, where would you `
-        + `like to put your ${_curPlayer().mark} mark?\n`;
+        // let message = `${_curPlayer().name}'s turn, where would you `
+        // + `like to put your ${_curPlayer().mark} mark?\n`;
     }
     
     function _inputHandler(input) {
+        console.log(input);
         try {
             board.setCellByCellNum(parseInt(input), _curPlayer().mark)
             if (_winnerFound() === true) {
