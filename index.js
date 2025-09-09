@@ -38,7 +38,7 @@ function createPlayer(name, mark) {
   }
 }
 
-let createBoard = function() {
+let board = (function() {
   const _noMarkValue = null
   const _height = 3
   const _width = 3
@@ -55,19 +55,25 @@ let createBoard = function() {
   let setCellByCellNum = function(cellNum, mark) {
     _setCell({..._getXAndYFromCellNum(cellNum), mark})
   }
-
-  let printBoard = function() {
-    log.debug("");
-    _cells.forEach((row) => {
-      console.log(row);
-    })
-    log.debug("");
-  }
-
+  
+  // let printBoard = function() {
+    //   log.debug("");
+    //   _cells.forEach((row) => {
+  //     console.log(row);
+  //   })
+  //   log.debug("");
+  // }
+  
   let getCells = () => _cells.map(arr => [...arr])
   let getHeight = () => _height
   let getWidth = () => _width
   let full = () => _cells.flat().filter(cell => cell === _noMarkValue).length === 0
+
+  render();
+
+  function render() {
+
+  }
   
   let _getXAndYFromCellNum = function(cellNum) {
     let conv1BasedTo0Based = 0
@@ -87,61 +93,57 @@ let createBoard = function() {
   }
 
   return {
-    printBoard,
     full,
     setCellByCellNum,
     getCells,
     getHeight,
     getWidth
   }
-}
+})()
 
-let consoleIOController = (function(rlInput, rlOutput) {
-  const rl = createInterface({
-    input: rlInput,
-    output: rlOutput,
-  });
+// let consoleIOController = (function(rlInput, rlOutput) {
+//   const rl = createInterface({
+//     input: rlInput,
+//     output: rlOutput,
+//   });
   
-  let promptUser = (message, inputHandler) => {
-    rl.question(chalk.blueBright(message), inputHandler)
-  }
+//   let promptUser = (message, inputHandler) => {
+//     rl.question(chalk.blueBright(message), inputHandler)
+//   }
 
-  let terminate = () => {
-    rl.close()
-  }
+//   let terminate = () => {
+//     rl.close()
+//   }
 
-  return {
-    promptUser,
-    terminate
-  }
-})(rlInput, rlOutput)
+//   return {
+//     promptUser,
+//     terminate
+//   }
+// })(rlInput, rlOutput)
 
 
 let game = (function(player1Mark, player2Mark) {
   let player1 = createPlayer("Mark", player1Mark) 
   let player2 = createPlayer("John", player2Mark)
   let player1Turn = true
-
-  let board = createBoard()
+  // let board = createBoard()
   
-  let start = () => {
+  function start() {
     log.info("Welcome to Odin Tic-tac-toe!")
     playRound()
   }
   
-  let playRound = function() {
+  function playRound() {
     if (board.full() === true) {
       _endGame({isTie: true})
       return
     }
-    log.info("----------")
-    board.printBoard()
     let message = `${_curPlayer().name}'s turn, where would you `
       + `like to put your ${_curPlayer().mark} mark?\n`;
-    consoleIOController.promptUser(message, _inputHandler)
+    // consoleIOController.promptUser(message, _inputHandler)
   }
 
-  let _inputHandler = function(input) {
+  function _inputHandler(input) {
     try {
       board.setCellByCellNum(parseInt(input), _curPlayer().mark)
       if (_winnerFound() === true) {
@@ -159,7 +161,7 @@ let game = (function(player1Mark, player2Mark) {
     }
   }
 
-  let _winnerFound = function() {
+  function _winnerFound() {
     let cells = board.getCells()
     let bWidth = board.getWidth()
     let bHeight = board.getHeight()
@@ -221,20 +223,20 @@ let game = (function(player1Mark, player2Mark) {
     return false
   }
   
-  let _curPlayer = () => {
+  function _curPlayer() {
     let player = player1Turn? player1 : player2
     return {
       mark: player.getMark(),
       name: player.getName()
     }
   }
-  let _endGame = ({isTie=false} = {}) => {
+  
+  function _endGame({isTie=false} = {}) {
     if (isTie) {
       log.info(`Tie!, thanks for playing!`)
     } else {
       log.info(`Winner found! Congrats ${_curPlayer().name}!`)
     }
-    board.printBoard()
     consoleIOController.terminate()
   }
 
