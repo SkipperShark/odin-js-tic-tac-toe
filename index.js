@@ -28,13 +28,13 @@ let log = (function () {
 })()
 
 
-function createPlayer(mark) {
-  let getMark = function() {
-    return mark
-  }
+function createPlayer(name, mark) {
+  let getMark =  () => mark
+  let getName = () => name
 
   return {
-    getMark
+    getMark,
+    getName
   }
 }
 
@@ -118,8 +118,8 @@ let consoleIOController = (function(rlInput, rlOutput) {
 
 
 let game = (function(player1Mark, player2Mark) {
-  let player1 = createPlayer(player1Mark) 
-  let player2 = createPlayer(player2Mark)
+  let player1 = createPlayer("Mark", player1Mark) 
+  let player2 = createPlayer("John", player2Mark)
   let player1Turn = true
 
   let board = createBoard()
@@ -130,12 +130,12 @@ let game = (function(player1Mark, player2Mark) {
   }
   
   let playRound = function() {
-    log.info("----------")
-    board.printBoard()
     if (board.full() === true) {
       _endGame({isTie: true})
       return
     }
+    log.info("----------")
+    board.printBoard()
     let message = `${_curPlayer().name}'s turn, where would you `
       + `like to put your ${_curPlayer().mark} mark?\n`;
     consoleIOController.promptUser(message, _inputHandler)
@@ -222,9 +222,10 @@ let game = (function(player1Mark, player2Mark) {
   }
   
   let _curPlayer = () => {
+    let player = player1Turn? player1 : player2
     return {
-      mark: player1Turn ? player1.getMark() : player2.getMark(),
-      name: player1Turn ? "Player 1" : "Player 2"
+      mark: player.getMark(),
+      name: player.getName()
     }
   }
   let _endGame = ({isTie=false} = {}) => {
@@ -233,6 +234,7 @@ let game = (function(player1Mark, player2Mark) {
     } else {
       log.info(`Winner found! Congrats ${_curPlayer().name}!`)
     }
+    board.printBoard()
     consoleIOController.terminate()
   }
 
