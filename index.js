@@ -42,7 +42,7 @@ let board = (function() {
     const _noMarkValue = null
     const _height = 3
     const _width = 3
-    const feBoard = document.getElementById("board")
+    const divBoard = document.getElementById("board")
     
     let _cells = []
     for(let i = 0; i < _height; i++) {
