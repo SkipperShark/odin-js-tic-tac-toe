@@ -166,7 +166,7 @@ let game = (function(player1Mark, player2Mark) {
         let bWidth = board.getWidth()
         let bHeight = board.getHeight()
         
-        let computerWinner = function(groups) {
+        let computeWinnerAlgo = function(groups) {
             for(const group of groups) { 
                 let markCounts = group.reduce(
                     (acc, ele) => {
@@ -184,7 +184,7 @@ let game = (function(player1Mark, player2Mark) {
         }
         // win conditions
         // straight horizontal line
-        if (computerWinner(cells) == true) {
+        if (computeWinnerAlgo(cells) == true) {
             return true
         }
         
@@ -197,7 +197,7 @@ let game = (function(player1Mark, player2Mark) {
             }
             groupsVertical.push(col) 
         }
-        if (computerWinner(cells) === true) {
+        if (computeWinnerAlgo(cells) === true) {
             return true
         }
         
@@ -216,7 +216,7 @@ let game = (function(player1Mark, player2Mark) {
         }
         groupsDiag.push(diag)
         
-        if (computerWinner(cells) === true) {
+        if (computeWinnerAlgo(cells) === true) {
             return true
         }
         
