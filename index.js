@@ -1,31 +1,29 @@
-import { clearScreenDown, createInterface } from 'node:readline';
-import chalk from 'chalk';
-import { brotliDecompress } from 'node:zlib';
+// import chalk from 'chalk';
 
 let player1Mark = "X"
 let player2Mark = "O"
-let rlInput = process.stdin
-let rlOutput = process.stdout
+// let rlInput = process.stdin
+// let rlOutput = process.stdout
 
-let log = (function () {
-    let log = console.log
+// let log = (function () {
+//     let log = console.log
     
-    let info = function(message) {
-        log(chalk.blueBright(message))
-    }
+//     let info = function(message) {
+//         log(chalk.blueBright(message))
+//     }
     
-    let debug = function(message) {
-        log(chalk.magentaBright(message))
-    }
+//     let debug = function(message) {
+//         log(chalk.magentaBright(message))
+//     }
     
-    let error = function(message) {
-        log(chalk.redBright(message))
-    }
+//     let error = function(message) {
+//         log(chalk.redBright(message))
+//     }
     
-    return {
-        info, debug, error
-    }
-})()
+//     return {
+//         info, debug, error
+//     }
+// })()
 
 
 function createPlayer(name, mark) {
@@ -42,7 +40,7 @@ let board = (function() {
     const _noMarkValue = null
     const _height = 3
     const _width = 3
-    const divBoard = document.getElementById("board")
+    const ulBoard = document.getElementById("board")
     
     let _cells = []
     for(let i = 0; i < _height; i++) {
@@ -71,8 +69,16 @@ let board = (function() {
     function getHeight() { return _height }
     function getWidth() { return _width }
     function full() { return _cells.flat().filter(cell => cell === _noMarkValue).length === 0 }
+
     function render() {
-        
+        ulBoard.innerHTML = ""
+        _cells.flat().forEach( (cell, i) => {
+            const newLi = document.createElement("li")
+            newLi.className = "cell"
+            newLi.textContent = i
+            newLi.setAttribute("cellId", i)
+            ulBoard.appendChild(newLi)
+        })
     }
     
     function _getXAndYFromCellNum(cellNum) {
@@ -129,7 +135,7 @@ let game = (function(player1Mark, player2Mark) {
     // let board = createBoard()
     
     function start() {
-        log.info("Welcome to Odin Tic-tac-toe!")
+        // log.info("Welcome to Odin Tic-tac-toe!")
         playRound()
     }
     
@@ -155,7 +161,8 @@ let game = (function(player1Mark, player2Mark) {
             return
         }
         catch (error) {
-            log.error(error.message)
+            // log.error(error.message)
+            alert(error.message)
             playRound()
             return
         }
@@ -233,9 +240,11 @@ let game = (function(player1Mark, player2Mark) {
     
     function _endGame({isTie=false} = {}) {
         if (isTie) {
-            log.info(`Tie!, thanks for playing!`)
+            // log.info(`Tie!, thanks for playing!`)
+            alert(`Tie!, thanks for playing!`)
         } else {
-            log.info(`Winner found! Congrats ${_curPlayer().name}!`)
+            // log.info(`Winner found! Congrats ${_curPlayer().name}!`)
+            alert(`Winner found! Congrats ${_curPlayer().name}!`)
         }
         consoleIOController.terminate()
     }
