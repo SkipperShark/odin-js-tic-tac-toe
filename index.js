@@ -41,6 +41,7 @@ function createPlayer(name, mark) {
 	}
 }
 
+
 let gameBoard = (function() {
 	const _noMarkValue = null
 	const _height = 3
@@ -103,47 +104,41 @@ let game = (function(player1Mark, player2Mark) {
 	let player1 = createPlayer("Mark", player1Mark) 
 	let player2 = createPlayer("John", player2Mark)
 	let player1Turn = true
-	_render()
+	let winner = undefined
 	
 	function start() {
-		playRound()
+		_render()
 	}
 	
-	function playRound() {
-		if (gameBoard.full() === true) {
-			_endGame({isTie: true})
-			return
-		}
-		// let message = `${_curPlayer().name}'s turn, where would you `
-		// + `like to put your ${_curPlayer().mark} mark?\n`;
-	}
+	// function playRound() {
+	// 	if (gameBoard.full() === true) {
+	// 		_endGame({isTie: true})
+	// 		return
+	// 	}
+	// 	// let message = `${_curPlayer().name}'s turn, where would you `
+	// 	// + `like to put your ${_curPlayer().mark} mark?\n`;
+	// }
 	
 	function _render() {
 		displayController.renderBoard(gameBoard.getCells(), _inputHandler)
-		let test = _getCurPlayer().mark
-		console.log(test);
-		displayController.renderCurrentMarkDisplay(_getCurPlayer().mark)
+		displayController.renderCurrentMarkDisplay(_curMark())
 	}
 
 	function _inputHandler(input) {
 		try {
-			gameBoard.setCellByCellNum(parseInt(input), _getCurPlayer().mark)
-			if (_gameEndConditionMet() === true) {
-				_endGame()
+			gameBoard.setCellByCellNum(parseInt(input), _curMark())
+			if (_gameEnd() === true) {
+				_gameEndMessage()
 			}
 			player1Turn = !player1Turn
 			_render()
-			// playRound()
-			return
 		}
 		catch (error) {
 			alert(error.message)
-			playRound()
-			return
 		}
 	}
 	
-	function _gameEndConditionMet() {
+	function _gameEnd() {
 		let cells = gameBoard.getCells()
 		let bWidth = gameBoard.getWidth()
 		let bHeight = gameBoard.getHeight()
@@ -200,21 +195,28 @@ let game = (function(player1Mark, player2Mark) {
 		groupsDiag.push(diag)
 		
 		if (computeWinnerAlgo(groupsDiag) === true) {
-			return true
+			winner = _getCurPlayer()
+			return
 		}
 		
-		return false
-	}
-	
-	function _getCurPlayer() {
-		let player = player1Turn? player1 : player2
-		return {
-			mark: player.getMark(),
-			name: player.getName()
+		if (gameBoard.full() === true) {
+			winner = null
 		}
 	}
+
+	function _curPlayer() {
+		return player1Turn? player1.getName() : player2.getName()
+	}
 	
-	function _endGame({isTie=false} = {}) {
+	function _curPlayer() {
+		return player1Turn? player1.getName() : player2.getName()
+	}
+
+	function _curMark () {
+		return player1Turn? player1.getMark() : player2.getMark()
+	} 
+	
+	function _gameEndMessage({isTie=false} = {}) {
 		if (isTie) {
 			alert(`Tie!, thanks for playing!`)
 			return
