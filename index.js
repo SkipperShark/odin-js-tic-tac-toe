@@ -21,11 +21,13 @@ let displayController = (function() {
 	}
 
 	function renderCurrentMarkDisplay(newMark) {
-
+		spanCurrentMark.innerText = ""
+		spanCurrentMark.innerText = newMark
 	}
 
 	return {
-		renderBoard
+		renderBoard,
+		renderCurrentMarkDisplay
 	}
 })()
 
@@ -39,7 +41,7 @@ function createPlayer(name, mark) {
 	}
 }
 
-let gameBoard = (function {
+let gameBoard = (function() {
 	const _noMarkValue = null
 	const _height = 3
 	const _width = 3
@@ -94,14 +96,13 @@ let gameBoard = (function {
 		getHeight,
 		getWidth
 	}
-})
+})()
 
 
 let game = (function(player1Mark, player2Mark) {
 	let player1 = createPlayer("Mark", player1Mark) 
 	let player2 = createPlayer("John", player2Mark)
 	let player1Turn = true
-	let board = createBoard()
 	_render()
 	
 	function start() {
@@ -109,7 +110,7 @@ let game = (function(player1Mark, player2Mark) {
 	}
 	
 	function playRound() {
-		if (board.full() === true) {
+		if (gameBoard.full() === true) {
 			_endGame({isTie: true})
 			return
 		}
@@ -118,20 +119,21 @@ let game = (function(player1Mark, player2Mark) {
 	}
 	
 	function _render() {
-		displayController.renderBoard(board.getCells(), _inputHandler)
+		displayController.renderBoard(gameBoard.getCells(), _inputHandler)
+		let test = _getCurPlayer().mark
+		console.log(test);
+		displayController.renderCurrentMarkDisplay(_getCurPlayer().mark)
 	}
 
 	function _inputHandler(input) {
-		console.log(input);
 		try {
-			board.setCellByCellNum(parseInt(input), _curPlayer().mark)
-			displayController.renderBoard()
-			if (_winnerFound() === true) {
+			gameBoard.setCellByCellNum(parseInt(input), _getCurPlayer().mark)
+			if (_gameEndConditionMet() === true) {
 				_endGame()
-				return
 			}
 			player1Turn = !player1Turn
-			playRound()
+			_render()
+			// playRound()
 			return
 		}
 		catch (error) {
@@ -141,10 +143,11 @@ let game = (function(player1Mark, player2Mark) {
 		}
 	}
 	
-	function _winnerFound() {
-		let cells = board.getCells()
-		let bWidth = board.getWidth()
-		let bHeight = board.getHeight()
+	function _gameEndConditionMet() {
+		let cells = gameBoard.getCells()
+		let bWidth = gameBoard.getWidth()
+		let bHeight = gameBoard.getHeight()
+		console.log(cells)
 		
 		let computeWinnerAlgo = function(groups) {
 			for(const group of groups) { 
@@ -170,9 +173,9 @@ let game = (function(player1Mark, player2Mark) {
 		
 		// straight vertical lines
 		let groupsVertical = []
-		for(let col_i = 0; col_i < board.getWidth(); col_i++) {
+		for(let col_i = 0; col_i < gameBoard.getWidth(); col_i++) {
 			let col = []
-			for (let row_i = 0; row_i < board.getHeight(); row_i++) {
+			for (let row_i = 0; row_i < gameBoard.getHeight(); row_i++) {
 				col.push(cells[row_i][col_i])
 			}
 			groupsVertical.push(col) 
@@ -203,7 +206,7 @@ let game = (function(player1Mark, player2Mark) {
 		return false
 	}
 	
-	function _curPlayer() {
+	function _getCurPlayer() {
 		let player = player1Turn? player1 : player2
 		return {
 			mark: player.getMark(),
@@ -213,13 +216,10 @@ let game = (function(player1Mark, player2Mark) {
 	
 	function _endGame({isTie=false} = {}) {
 		if (isTie) {
-			// log.info(`Tie!, thanks for playing!`)
 			alert(`Tie!, thanks for playing!`)
-		} else {
-			// log.info(`Winner found! Congrats ${_curPlayer().name}!`)
-			alert(`Winner found! Congrats ${_curPlayer().name}!`)
+			return
 		}
-		// consoleIOController.terminate()
+		alert(`Winner found! Congrats ${_getCurPlayer().name}!`)
 	}
 	
 	return {
