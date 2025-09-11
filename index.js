@@ -147,7 +147,6 @@ let game = (function(player1Mark, player2Mark) {
 		let cells = gameBoard.getCells()
 		let bWidth = gameBoard.getWidth()
 		let bHeight = gameBoard.getHeight()
-		console.log(cells)
 		
 		let computeWinnerAlgo = function(groups) {
 			for(const group of groups) { 
@@ -159,6 +158,7 @@ let game = (function(player1Mark, player2Mark) {
 					},
 					{}
 				)
+				console.log(markCounts)
 				if (Math.max(...Object.values(markCounts)) >= group.length) {
 					return true
 				}
@@ -180,7 +180,7 @@ let game = (function(player1Mark, player2Mark) {
 			}
 			groupsVertical.push(col) 
 		}
-		if (computeWinnerAlgo(cells) === true) {
+		if (computeWinnerAlgo(groupsVertical) === true) {
 			return true
 		}
 		
@@ -199,7 +199,7 @@ let game = (function(player1Mark, player2Mark) {
 		}
 		groupsDiag.push(diag)
 		
-		if (computeWinnerAlgo(cells) === true) {
+		if (computeWinnerAlgo(groupsDiag) === true) {
 			return true
 		}
 		
