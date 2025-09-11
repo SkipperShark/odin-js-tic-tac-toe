@@ -24,14 +24,18 @@ body {
     padding: var(--general-padding);
 
     display: grid;
-    grid-template-rows: max-content 1fr;
+    grid-template-rows: max-content max-content 1fr;
+    grid-template-areas:
+        "header"
+        "options"
+        "board";
 
     .board {
-        grid-row: 2;
+        grid-area: board;
         display: grid;
         grid-template-rows: repeat(3, 1fr);
         grid-template-columns: repeat(3, 1fr);
-    
+        border: 1px solid green;
     }
     
     .cell {
