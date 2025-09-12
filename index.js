@@ -110,15 +110,6 @@ let game = (function(player1Mark, player2Mark) {
 		_render()
 	}
 	
-	// function playRound() {
-	// 	if (gameBoard.full() === true) {
-	// 		_endGame({isTie: true})
-	// 		return
-	// 	}
-	// 	// let message = `${_curPlayer().name}'s turn, where would you `
-	// 	// + `like to put your ${_curPlayer().mark} mark?\n`;
-	// }
-	
 	function _render() {
 		displayController.renderBoard(gameBoard.getCells(), _inputHandler)
 		displayController.renderCurrentMarkDisplay(_curMark())
