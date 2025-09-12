@@ -30,6 +30,12 @@
 // ]
 // console.log(test[3][1])
 
-import chalk from 'chalk';
+// import chalk from 'chalk';
 
-console.log(chalk.blueBright("hello world!"))
+// console.log(chalk.blueBright("hello world!"))
+
+const test = {
+  "name" : "shar"
+}
+test.name = "hello"
+console.log(test);

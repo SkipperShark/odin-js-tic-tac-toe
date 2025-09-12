@@ -60,18 +60,10 @@ let gameBoard = (function() {
 		_setCell({..._getXAndYFromCellNum(cellNum), mark})
 	}
 	
-	// let printBoard = function() {
-	// 	console.log("");
-	// 	_cells.forEach((row) => {
-	// 		console.log(row);
-	// 	})
-	// 	console.log("");
-	// }
-	
 	function getCells() { return _cells.map(arr => [...arr]) }
 	function getHeight() { return _height }
 	function getWidth() { return _width }
-	function full() { return _cells.flat().filter(cell => cell === _noMarkValue).length === 0 }
+	function full() { return _cells.flat().every(cell => cell !== _noMarkValue)}
 	
 	function _getXAndYFromCellNum(cellNum) {
 		let conv1BasedTo0Based = 0
@@ -104,32 +96,44 @@ let game = (function(player1Mark, player2Mark) {
 	let player1 = createPlayer("Mark", player1Mark) 
 	let player2 = createPlayer("John", player2Mark)
 	let player1Turn = true
-	let winner = undefined
+    let winner = {
+        "name" : null,
+        "isTie" : false
+    }
 	
 	function start() {
-		_render()
+		_renderBoard()
+        _renderCurrentMarkDisplay()
 	}
 	
-	function _render() {
+	function _renderBoard() {
 		displayController.renderBoard(gameBoard.getCells(), _inputHandler)
+	}
+	function _renderCurrentMarkDisplay() {
 		displayController.renderCurrentMarkDisplay(_curMark())
 	}
 
 	function _inputHandler(input) {
+        if (_gameEnded()) {
+            alert("Game ended!")
+            return
+        }
 		try {
 			gameBoard.setCellByCellNum(parseInt(input), _curMark())
-			if (_gameEnd() === true) {
-				_gameEndMessage()
+            _renderBoard()
+			_checkWinner()
+            if (_gameEnded()) {
+				_handleGameEnd()
 			}
 			player1Turn = !player1Turn
-			_render()
+			_renderCurrentMarkDisplay()
 		}
 		catch (error) {
 			alert(error.message)
 		}
 	}
 	
-	function _gameEnd() {
+	function _checkWinner() {
 		let cells = gameBoard.getCells()
 		let bWidth = gameBoard.getWidth()
 		let bHeight = gameBoard.getHeight()
@@ -144,7 +148,6 @@ let game = (function(player1Mark, player2Mark) {
 					},
 					{}
 				)
-				console.log(markCounts)
 				if (Math.max(...Object.values(markCounts)) >= group.length) {
 					return true
 				}
@@ -154,52 +157,54 @@ let game = (function(player1Mark, player2Mark) {
 		// win conditions
 		// straight horizontal line
 		if (computeWinnerAlgo(cells) == true) {
-			return true
+            console.log("1");
+            winner.name = _curPlayerName()
+            return
 		}
 		
 		// straight vertical lines
 		let groupsVertical = []
 		for(let col_i = 0; col_i < gameBoard.getWidth(); col_i++) {
-			let col = []
+            let col = []
 			for (let row_i = 0; row_i < gameBoard.getHeight(); row_i++) {
-				col.push(cells[row_i][col_i])
+                col.push(cells[row_i][col_i])
 			}
 			groupsVertical.push(col) 
 		}
 		if (computeWinnerAlgo(groupsVertical) === true) {
-			return true
+            console.log("2");
+            winner.name = _curPlayerName()
+            return
 		}
 		
 		// diagonal line (top left to bottom right)
 		let groupsDiag = []
 		let diag = []
 		for(let i = 0; i < bWidth; i++) {
-			diag.push(cells[i][i])
+            diag.push(cells[i][i])
 		}
 		groupsDiag.push(diag)
 		
 		// diagonal line (bottom left to top right)
 		diag = []
 		for(let i = 0, j = bHeight - 1; i < bWidth && j < bHeight; i++, j--) {
-			diag.push(cells[j][i])
+            diag.push(cells[j][i])
 		}
 		groupsDiag.push(diag)
 		
 		if (computeWinnerAlgo(groupsDiag) === true) {
-			winner = _getCurPlayer()
-			return
+            console.log("3");
+            winner.name = _curPlayerName()
+            return
 		}
 		
 		if (gameBoard.full() === true) {
-			winner = null
+            winner.isTie = true
+            return
 		}
 	}
-
-	function _curPlayer() {
-		return player1Turn? player1.getName() : player2.getName()
-	}
 	
-	function _curPlayer() {
+	function _curPlayerName() {
 		return player1Turn? player1.getName() : player2.getName()
 	}
 
@@ -207,13 +212,17 @@ let game = (function(player1Mark, player2Mark) {
 		return player1Turn? player1.getMark() : player2.getMark()
 	} 
 	
-	function _gameEndMessage({isTie=false} = {}) {
-		if (isTie) {
+	function _handleGameEnd() {
+		if (winner.isTie === true) {
 			alert(`Tie!, thanks for playing!`)
 			return
 		}
-		alert(`Winner found! Congrats ${_getCurPlayer().name}!`)
+		alert(`Winner found! Congrats ${winner.name}!`)
 	}
+
+    function _gameEnded() {
+        return winner.name != null || winner.isTie === true
+    }
 	
 	return {
 		start
