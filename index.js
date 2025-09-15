@@ -249,11 +249,20 @@ let game = (function(player1Mark, player2Mark) {
 	
 	function _handleGameEnd() {
 		_renderDisplay()
-		if (winner.isTie === true) {
-			alert(`Tie!, thanks for playing!`)
-			return
-		}
-		alert(`Winner found! Congrats ${winner.name}!`)
+		let message = winner.isTie === true ? "Tie!, thanks for playing!" : 
+			`Winner found! Congrats ${winner.name}!`
+		view.showMessage(message)
+		return
+		// if (winner.isTie === true) {
+		// 	alert(`Tie!, thanks for playing!`)
+		// 	view.showMessage(`Tie!, thanks for playing!`)
+		// 	return
+		// }
+		// else {
+		// 	view.showMessage(`Tie!, thanks for playing!`)
+		// 	alert(`Winner found! Congrats ${winner.name}!`)
+
+		// }
 	}
 	
 	let _curPlayerName = () => player1Turn? player1.getName() : player2.getName()
