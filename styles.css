@@ -83,7 +83,7 @@ button {
     border-radius: 15px;
 
     display: grid;
-    grid-template-rows: max-content max-content 1fr max-content;
+    grid-template-rows: max-content 100px 1fr max-content;
     grid-template-areas:
         "header"
         "info"
