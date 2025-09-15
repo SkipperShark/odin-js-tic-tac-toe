@@ -6,14 +6,16 @@ let displayController = (function() {
 	const ulBoard = document.getElementById("board")
 	const spanCurrentMark = document.getElementById("currentMark")
 	const divResetButton = document.getElementById("resetButton")
+	const pCurrentPlayer = document.getElementById("currentPlayer")
 	
 	function renderBoard(cells, cellClickHandler) {
 		ulBoard.innerHTML = ""
 		cells.flat().forEach( (cell, i) => {
 			const newLi = document.createElement("li")
-			newLi.className = "cell"
+			newLi.className = "cellContainer"
 			const newButton = document.createElement("button")
 			newButton.textContent = cell
+			newButton.className = "cell"
 			newButton.addEventListener("click", () => cellClickHandler(i))
 			newLi.setAttribute("cellId", i)
 			newLi.appendChild(newButton)
@@ -21,14 +23,15 @@ let displayController = (function() {
 		})
 	}
 	
-	function renderCurrentMarkDisplay(newMark) {
-		spanCurrentMark.innerText = ""
-		spanCurrentMark.innerText = newMark
+	function renderCurrentPlayer(playerName, playerMark) {
+		pCurrentPlayer.textContent = `${playerName}'s Turn!`
+		spanCurrentMark.innerText = playerMark
 	}
 
 	function renderResetButton(onClickHandler) {
 		divResetButton.innerHTML = ""
 		const btn = document.createElement("button")
+		btn.className = "btn"
 		btn.innerText = "Reset"
 		btn.addEventListener("click", onClickHandler)
 		divResetButton.appendChild(btn)
@@ -36,8 +39,8 @@ let displayController = (function() {
 	
 	return {
 		renderBoard,
-		renderCurrentMarkDisplay,
-		renderResetButton
+		renderResetButton,
+		renderCurrentPlayer
 	}
 })()
 
@@ -126,20 +129,17 @@ let game = (function(player1Mark, player2Mark) {
 			"isTie" : false
 		}
 		gameBoard.reset()
-		_renderBoard()
-		_renderCurrentMarkDisplay()
-		displayController.renderResetButton(_resetGame)
+		_renderDisplay()
 	}
-
+	
 	function start() {
 		_resetGame()
 	}
 	
-	function _renderBoard() {
+	function _renderDisplay() {
 		displayController.renderBoard(gameBoard.getCells(), _inputHandler)
-	}
-	function _renderCurrentMarkDisplay() {
-		displayController.renderCurrentMarkDisplay(_curMark())
+		displayController.renderCurrentPlayer(_curPlayerName(), _curMark())
+		displayController.renderResetButton(_resetGame)
 	}
 	
 	function _inputHandler(input) {
@@ -149,14 +149,13 @@ let game = (function(player1Mark, player2Mark) {
 		}
 		try {
 			gameBoard.setCellByCellNum(parseInt(input), _curMark())
-			_renderBoard()
 			_checkWinner()
 			if (_gameEnded()) {
 				_handleGameEnd()
 				return
 			}
 			player1Turn = !player1Turn
-			_renderCurrentMarkDisplay()
+			_renderDisplay()
 		}
 		catch (error) {
 			alert(error.message)
