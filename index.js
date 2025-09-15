@@ -4,7 +4,6 @@ let player2Mark = "O"
 
 let displayController = (function() {
 	const ulBoard = document.getElementById("board")
-	const spanCurrentMark = document.getElementById("currentMark")
 	const divResetButton = document.getElementById("resetButton")
 	const pCurrentPlayer = document.getElementById("currentPlayer")
 	
@@ -24,8 +23,13 @@ let displayController = (function() {
 	}
 	
 	function renderCurrentPlayer(playerName, playerMark) {
-		pCurrentPlayer.textContent = `${playerName}'s Turn!`
-		spanCurrentMark.innerText = playerMark
+		pCurrentPlayer.innerHTML = ""
+		pCurrentPlayer.innerText = `${playerName}'s Turn! Place your`
+		const span = document.createElement("span")
+		span.className = "currentMark"
+		span.innerText = playerMark
+		pCurrentPlayer.appendChild(span)
+
 	}
 
 	function renderResetButton(onClickHandler) {
@@ -240,6 +244,7 @@ let game = (function(player1Mark, player2Mark) {
 	} 
 	
 	function _handleGameEnd() {
+		_renderDisplay()
 		if (winner.isTie === true) {
 			alert(`Tie!, thanks for playing!`)
 			return

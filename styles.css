@@ -49,8 +49,14 @@ button {
         padding: var(--general-padding);
     }
 
+    .currentPlayer {
+        display: flex;
+        align-items: center;
+    }
+
     .currentMark {
         font-size: 2rem;
+        padding: 0 var(--general-padding);
     }
 
     .board {
