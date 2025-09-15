@@ -30,6 +30,11 @@ body {
         "options"
         "board";
 
+    .options {
+        display: flex;
+        justify-content: space-between;
+    }
+
     .board {
         grid-area: board;
         display: grid;
