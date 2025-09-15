@@ -5,7 +5,7 @@ let player2Mark = "O"
 let displayController = (function() {
 	const ulBoard = document.getElementById("board")
 	const spanCurrentMark = document.getElementById("currentMark")
-	const btnReset = document.getElementById("resetButton")
+	const divResetButton = document.getElementById("resetButton")
 	
 	function renderBoard(cells, cellClickHandler) {
 		ulBoard.innerHTML = ""
@@ -13,7 +13,7 @@ let displayController = (function() {
 			const newLi = document.createElement("li")
 			newLi.className = "cell"
 			const newButton = document.createElement("button")
-			newButton.textContent = `${cell} - ${i}`
+			newButton.textContent = cell
 			newButton.addEventListener("click", () => cellClickHandler(i))
 			newLi.setAttribute("cellId", i)
 			newLi.appendChild(newButton)
@@ -27,7 +27,11 @@ let displayController = (function() {
 	}
 
 	function renderResetButton(onClickHandler) {
-		btnReset.addEventListener(onClickHandler)
+		divResetButton.innerHTML = ""
+		const btn = document.createElement("button")
+		btn.innerText = "Reset"
+		btn.addEventListener("click", onClickHandler)
+		divResetButton.appendChild(btn)
 	}
 	
 	return {
@@ -91,9 +95,12 @@ let gameBoard = (function() {
 		_cells[x][y] = mark
 	}
 
+	let reset = () => _init()
+
 	_init()
 	
 	return {
+		reset,
 		full,
 		setCellByCellNum,
 		getCells,
@@ -112,10 +119,20 @@ let game = (function(player1Mark, player2Mark) {
 		"isTie" : false
 	}
 	
-	function start() {
+	function _resetGame() {
+		player1Turn = true
+		winner = {
+			"name" : null,
+			"isTie" : false
+		}
+		gameBoard.reset()
 		_renderBoard()
 		_renderCurrentMarkDisplay()
-		renderResetButton
+		displayController.renderResetButton(_resetGame)
+	}
+
+	function start() {
+		_resetGame()
 	}
 	
 	function _renderBoard() {
@@ -145,6 +162,7 @@ let game = (function(player1Mark, player2Mark) {
 			alert(error.message)
 		}
 	}
+
 	
 	function _checkWinner() {
 		let cells = gameBoard.getCells()
