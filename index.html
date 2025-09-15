@@ -9,21 +9,39 @@
 </head>
 <body>
   <div class="main">
-    <h1>Odin - JS Tic Tac Toe</h1>
+    <h1 class="title">Odin - JS Tic Tac Toe</h1>
     <div class="info">
       <p id="currentPlayer" class="currentPlayer">
         Current Player turn :
         <span class="currentMark">Foo</span>
       </p>
+      <button class="btn" id="changePlayerNameButton" type="button">Change player name</button>
     </div>
     <ul class="board" id="board">
       <li><button>test</button></li>
     </ul>
     <div class="actions">
-      <button type="button"></button>
       <div id="resetButton">
+        <button class="btn" id="resetButton" type="button">Reset</button>
       </div>
     </div>
   </div>
+  <dialog id="changePlayerNameDialog">
+    <form id="changePlayerNameForm" class="form" action="" method="dialog">
+      <h3 class="title">Change player name</h3>
+      <div class="text-input">
+        <label for="player1Name">X Mark player Name </label>
+        <input type="text" name="player1Name" id="player1Name" required>
+      </div>
+      <div class="text-input">
+        <label for="player2Name">O Mark player Name </label>
+        <input type="text" name="player2Name" id="player2Name" required>
+      </div>
+      <div class="actions">
+        <button id="cancelChangePlayerName" class="btn" type="button">Cancel</button>
+        <button class="btn" type="submit">Okay!</button>
+      </div>
+    </form>
+  </dialog>
 </body>
 </html>

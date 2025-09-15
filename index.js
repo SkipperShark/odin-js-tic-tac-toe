@@ -2,10 +2,15 @@ let player1Mark = "X"
 let player2Mark = "O"
 
 
-let displayController = (function() {
-	const ulBoard = document.getElementById("board")
-	const divResetButton = document.getElementById("resetButton")
-	const pCurrentPlayer = document.getElementById("currentPlayer")
+let view = (function() {
+	let doc = document
+	const ulBoard = doc.getElementById("board")
+	const pCurrentPlayer = doc.getElementById("currentPlayer")
+	const btnChangePlayerName = doc.getElementById("changePlayerNameButton")
+	const btnResetButton = doc.getElementById("resetButton")
+	const dialog = doc.getElementById("changePlayerNameDialog")
+	const form = doc.getElementById("changePlayerNameForm")
+	const btnCloseChangePlayerName = doc.getElementById("cancelChangePlayerName")
 	
 	function renderBoard(cells, cellClickHandler) {
 		ulBoard.innerHTML = ""
@@ -22,7 +27,7 @@ let displayController = (function() {
 		})
 	}
 	
-	function renderCurrentPlayer(playerName, playerMark) {
+	function renderCurrentPlayerInfo(playerName, playerMark) {
 		pCurrentPlayer.innerHTML = ""
 		pCurrentPlayer.innerText = `${playerName}'s Turn! Place your`
 		const span = document.createElement("span")
@@ -32,32 +37,37 @@ let displayController = (function() {
 
 	}
 
-	function renderResetButton(onClickHandler) {
-		divResetButton.innerHTML = ""
-		const btn = document.createElement("button")
-		btn.className = "btn"
-		btn.innerText = "Reset"
-		btn.addEventListener("click", onClickHandler)
-		divResetButton.appendChild(btn)
-	}
+	let showMessage = (message) => pCurrentPlayer.innerHTML = message
+	let openChangePlayerNameDialog = () => dialog.showModal()
+	let closeChangePlayerNameDialog = () => dialog.close()
 	
 	return {
 		renderBoard,
-		renderResetButton,
-		renderCurrentPlayer
+		renderCurrentPlayerInfo,
+		showMessage,
+		btnResetButton,
+		btnChangePlayerName,
+		btnCloseChangePlayerName,
+		openChangePlayerNameDialog,
+		closeChangePlayerNameDialog,
+		form
 	}
 })()
 
 function createPlayer(name, mark) {
-	let getMark =  () => mark
-	let getName = () => name
+	let playerName = name
+	let playerMark = mark
+
+	let getMark =  () => playerMark
+	let getName = () => playerName
+	let setName = (name) => playerName = name
 	
 	return {
 		getMark,
-		getName
+		getName,
+		setName
 	}
 }
-
 
 let gameBoard = (function() {
 	const _noMarkValue = null
@@ -138,12 +148,12 @@ let game = (function(player1Mark, player2Mark) {
 	
 	function start() {
 		_resetGame()
+		init()
 	}
 	
 	function _renderDisplay() {
-		displayController.renderBoard(gameBoard.getCells(), _inputHandler)
-		displayController.renderCurrentPlayer(_curPlayerName(), _curMark())
-		displayController.renderResetButton(_resetGame)
+		view.renderBoard(gameBoard.getCells(), _inputHandler)
+		view.renderCurrentPlayerInfo(_curPlayerName(), _curMark())
 	}
 	
 	function _inputHandler(input) {
@@ -235,14 +245,6 @@ let game = (function(player1Mark, player2Mark) {
 		}
 	}
 	
-	function _curPlayerName() {
-		return player1Turn? player1.getName() : player2.getName()
-	}
-	
-	function _curMark () {
-		return player1Turn? player1.getMark() : player2.getMark()
-	} 
-	
 	function _handleGameEnd() {
 		_renderDisplay()
 		if (winner.isTie === true) {
@@ -252,12 +254,46 @@ let game = (function(player1Mark, player2Mark) {
 		alert(`Winner found! Congrats ${winner.name}!`)
 	}
 	
-	function _gameEnded() {
-		return winner.name != null || winner.isTie === true
+	let _curPlayerName = () => player1Turn? player1.getName() : player2.getName()
+	let _curMark = () => player1Turn? player1.getMark() : player2.getMark()
+	let _gameEnded = () => winner.name != null || winner.isTie === true
+
+	let init = () => {
+		view.btnResetButton.addEventListener("click", _resetGame)
+		view.btnChangePlayerName.addEventListener(
+			"click",
+			() => view.openChangePlayerNameDialog()
+		)
+		view.btnCloseChangePlayerName.addEventListener(
+			"click",
+			() => {
+				view.form.reset()
+				view.closeChangePlayerNameDialog()
+			}
+		)
+		view.form.addEventListener("submit", (e) => {
+			const formData = new FormData(view.form)
+			newPlayer1Name = formData.get("player1Name")
+			if (!newPlayer1Name) {
+				alert("Please enter a name for player 1!")
+				return
+			}
+			newPlayer2Name = formData.get("player2Name")
+			if (!newPlayer2Name) {
+				alert("Please enter a name for player 2!")
+				return
+			}
+			player1.setName(newPlayer1Name)
+			player2.setName(newPlayer2Name)
+			_renderDisplay()
+			view.form.reset()
+			view.closeChangePlayerNameDialog()
+		})
 	}
 	
 	return {
-		start
+		start,
+		init,
 	}
 	
 })(player1Mark, player2Mark)
