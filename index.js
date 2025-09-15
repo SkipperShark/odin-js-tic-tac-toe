@@ -16,7 +16,9 @@ let view = (function() {
 		ulBoard.innerHTML = ""
 		cells.flat().forEach( (cell, i) => {
 			const newLi = document.createElement("li")
-			newLi.className = "cellContainer"
+			let bottomBorder = i <= 5 ? "cell-container-with-bottom-border" : "" 
+			let rightBorder = (i + 1) % 3 > 0 ? "cell-container-with-right-border" : ""
+			newLi.className = `cellContainer ${bottomBorder} ${rightBorder}`
 			const newButton = document.createElement("button")
 			newButton.textContent = cell
 			newButton.className = "cell"
