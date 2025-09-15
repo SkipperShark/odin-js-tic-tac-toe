@@ -7,6 +7,7 @@
 
 :root {
     --general-spacing: 10px;
+    --general-spacing-double: calc(var(--general-spacing) * 2);
     --general-spacing-half: calc(var(--general-spacing) / 2);
     --primary-text-color: white;
     --secondary-text-color: black;
@@ -28,7 +29,7 @@ button {
     border: none;
 }
 
-dialog {
+.dialog {
     padding: var(--general-spacing);
     position: absolute;
     top: 50%;
@@ -45,6 +46,7 @@ dialog {
     color: var(--secondary-text-color);
     border: none;
     border-radius: 15px;
+    font-weight: bold;
 }
 
 .actions {
@@ -72,11 +74,13 @@ dialog {
 
 .main {
     width: 500px;
-    height: 400px;
+    height: 500px;
     background-color: var(--background-color);
     padding: var(--general-spacing);
     text-align: center;
     color: var(--primary-text-color);
+    border: 1px solid var(--primary-text-color);
+    border-radius: 15px;
 
     display: grid;
     grid-template-rows: max-content max-content 1fr max-content;
