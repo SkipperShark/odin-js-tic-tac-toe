@@ -45,8 +45,9 @@ body {
     
     .cell {
         display: flex;
-
+        
         button {
+            font-size: 2rem;
             width: 100%;
             height: 100%;
             background-color: transparent;
